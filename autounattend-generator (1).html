@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سازنده‌ی autounattend.xml — نصب خودکار ویندوز</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1118;
+  --bg-2:#111827;
+  --panel:#161f2c;
+  --panel-2:#1b2534;
+  --line:#26334a;
+  --line-soft:#1e293b;
+  --text:#e7ecf2;
+  --muted:#8a96a8;
+  --muted-2:#5d6a7f;
+  --accent:#4fd8c4;
+  --accent-2:#3ab8a6;
+  --amber:#f5a94e;
+  --red:#e6685f;
+  --disk-empty:#1b2432;
+  --font-ui:'Vazirmatn',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+html[data-applang="en"]{ --font-ui:'Inter',sans-serif; }
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(79,216,196,0.07), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(245,169,78,0.05), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--font-ui);
+  min-height:100vh;
+  line-height:1.7;
+}
+.mono{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate;}
+::selection{background:var(--accent);color:#06110f;}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+.topbar{
+  padding:22px 28px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line-soft);
+  flex-wrap:wrap;gap:12px;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-weight:800;color:#06120f;font-size:13px;letter-spacing:-.5px;
+  box-shadow:0 0 0 1px rgba(79,216,196,.3),0 10px 26px -10px rgba(79,216,196,.7);
+  flex-shrink:0;transition:transform .2s ease;
+}
+.brand-mark:hover{transform:rotate(-6deg) scale(1.05);}
+.brand-text h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.2px;}
+.brand-text p{margin:2px 0 0;font-size:12.5px;color:var(--muted);font-family:var(--font-mono);direction:ltr;text-align:left;}
+.top-right{display:flex;align-items:center;gap:10px;}
+.source-link{
+  font-size:12px;color:var(--muted);font-family:var(--font-mono);direction:ltr;
+  border:1px solid var(--line);padding:6px 12px;border-radius:100px;text-decoration:none;
+  transition:.2s;white-space:nowrap;
+}
+.source-link:hover{border-color:var(--accent);color:var(--accent);}
+.lang-toggle{
+  display:flex;border:1px solid var(--line);border-radius:100px;overflow:hidden;font-family:var(--font-mono);font-size:12px;
+}
+.lang-toggle button{
+  border:none;background:transparent;color:var(--muted);padding:7px 14px;cursor:pointer;font-family:var(--font-mono);
+  transition:.15s;
+}
+.lang-toggle button.active{background:var(--accent);color:#06120f;font-weight:700;}
+
+.diskbar-wrap{padding:18px 28px 8px;}
+.diskbar-label{
+  display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted-2);
+  font-family:var(--font-mono);direction:ltr;margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase;
+}
+.diskbar{
+  display:flex;gap:3px;height:32px;border-radius:8px;overflow:hidden;
+  border:1px solid var(--line);padding:3px;background:var(--bg-2);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.4);
+}
+.diskbar .part{
+  flex:1;border-radius:4px;background:var(--disk-empty);position:relative;
+  transition:background .5s ease, box-shadow .5s ease;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:10px;color:var(--muted-2);overflow:hidden;
+}
+.diskbar .part.done{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#06120f;font-weight:600;}
+.diskbar .part.current{background:var(--panel-2);color:var(--text);box-shadow:inset 0 0 0 2px var(--accent);}
+.diskbar .part.current::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 30%,rgba(79,216,196,.25) 50%,transparent 70%);
+  animation:scan 1.6s linear infinite;
+}
+@keyframes scan{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+.layout{display:flex;gap:0;max-width:1180px;margin:0 auto;padding:22px 28px 60px;align-items:flex-start;gap:26px;}
+.sidebar{
+  width:230px;flex-shrink:0;position:sticky;top:20px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.step-nav{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 12px;border-radius:10px;cursor:pointer;
+  color:var(--muted);font-size:13.5px;transition:transform .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
+  border:1px solid transparent;
+}
+.step-nav:hover{background:var(--panel);color:var(--text);transform:translateX(-2px);}
+html[dir=ltr] .step-nav:hover{transform:translateX(2px);}
+.step-nav.active{background:var(--panel);color:var(--accent);border-color:rgba(79,216,196,.35);box-shadow:0 6px 18px -12px rgba(79,216,196,.5);}
+.step-nav .num{
+  font-family:var(--font-mono);font-size:11px;width:24px;height:24px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;background:var(--panel-2);color:var(--muted-2);flex-shrink:0;
+  transition:.2s;
+}
+.step-nav.active .num{background:var(--accent);color:#06120f;box-shadow:0 0 0 3px rgba(79,216,196,.18);}
+.step-nav.visited .num{background:var(--accent-2);color:#06120f;}
+
+.content{flex:1;min-width:0;}
+.card{
+  background:linear-gradient(180deg, var(--panel-2) 0%, var(--panel) 14%);
+  border:1px solid var(--line-soft);border-radius:16px;
+  padding:30px 32px;animation:fadein .4s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 1px 0 rgba(255,255,255,.02) inset, 0 30px 60px -30px rgba(0,0,0,.55);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--amber),transparent);
+  opacity:.55;
+}
+@keyframes fadein{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card h2{
+  margin:0 0 6px;font-size:20.5px;font-weight:800;letter-spacing:.1px;
+  background:linear-gradient(90deg,var(--text),var(--accent) 130%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.card .sub{color:var(--muted);font-size:13.5px;margin:0 0 26px;max-width:640px;}
+
+.field{margin-bottom:20px;}
+.field label.title{display:block;font-size:13.5px;font-weight:600;margin-bottom:8px;color:var(--text);}
+.field .hint{font-size:12px;color:var(--muted-2);margin-top:6px;}
+select,input[type=text],input[type=password],input[type=number],textarea{
+  width:100%;background:var(--bg-2);border:1px solid var(--line);color:var(--text);
+  padding:10px 12px;border-radius:8px;font-family:var(--font-ui);font-size:13.5px;outline:none;transition:.15s;
+}
+input[dir=ltr],.ltr-input{direction:ltr;text-align:left;font-family:var(--font-mono);}
+select:focus,input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,216,196,.12);}
+textarea{resize:vertical;min-height:90px;font-family:var(--font-mono);direction:ltr;text-align:left;}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+@media(max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+.choice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+.choice{
+  border:1px solid var(--line);background:var(--bg-2);border-radius:11px;padding:14px 15px;cursor:pointer;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;position:relative;
+}
+.choice:hover{border-color:var(--muted-2);transform:translateY(-2px);}
+.choice.selected{
+  border-color:var(--accent);background:rgba(79,216,196,.09);
+  box-shadow:0 8px 22px -12px rgba(79,216,196,.55), inset 0 0 0 1px rgba(79,216,196,.25);
+}
+.choice .t{font-size:13.5px;font-weight:600;}
+.choice .d{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.choice.selected::before{
+  content:'✓';position:absolute;top:-7px;inset-inline-start:-7px;color:#06120f;font-size:11px;font-weight:800;
+  width:18px;height:18px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.35);
+}
+
+.toggle-row{
+  display:flex;align-items:flex-start;gap:12px;padding:13px 10px;border-bottom:1px solid var(--line-soft);
+  border-radius:8px;transition:background .15s ease;margin:0 -10px;
+}
+.toggle-row:hover{background:rgba(255,255,255,.02);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row .txt{flex:1;}
+.toggle-row .t{font-size:13.5px;font-weight:600;}
+.toggle-row .d{font-size:12px;color:var(--muted);margin-top:3px;}
+.switch{
+  width:42px;height:24px;border-radius:100px;background:var(--bg-2);border:1px solid var(--line);
+  position:relative;cursor:pointer;flex-shrink:0;transition:.2s;margin-top:2px;
+}
+.switch.on{background:var(--accent-2);border-color:var(--accent-2);}
+.switch .knob{
+  width:18px;height:18px;border-radius:50%;background:#dfe6ee;position:absolute;top:2px;inset-inline-end:2px;
+  transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+.switch.on .knob{inset-inline-end:20px;background:#06120f;}
+
+.checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
+.chk{
+  display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;
+  background:var(--bg-2);cursor:pointer;font-size:12.8px;transition:transform .15s ease, border-color .15s ease, background .15s ease;
+}
+.chk:hover{border-color:var(--muted-2);transform:translateY(-1px);}
+.chk.on{border-color:var(--amber);background:rgba(245,169,78,.1);color:var(--amber);box-shadow:0 6px 16px -12px rgba(245,169,78,.6);}
+.chk .box{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--muted-2);flex-shrink:0;position:relative;}
+.chk.on .box{background:var(--amber);border-color:var(--amber);}
+.chk.on .box::before{content:'✕';position:absolute;top:-3px;left:2px;font-size:10px;color:#06120f;}
+
+.accounts{display:flex;flex-direction:column;gap:12px;}
+.account-card{border:1px solid var(--line);background:var(--bg-2);border-radius:12px;padding:15px 17px;transition:border-color .15s ease;}
+.account-card:hover{border-color:var(--muted-2);}
+.account-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.account-head .tag{font-family:var(--font-mono);font-size:11px;color:var(--muted-2);}
+.rm-btn{background:none;border:1px solid var(--line);color:var(--red);border-radius:7px;padding:5px 10px;font-size:11.5px;cursor:pointer;font-family:var(--font-ui);}
+.rm-btn:hover{border-color:var(--red);}
+.add-btn{
+  border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:10px;
+  padding:12px;text-align:center;cursor:pointer;font-size:13px;font-family:var(--font-ui);transition:.15s;
+}
+.add-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+.nav-buttons{display:flex;justify-content:space-between;margin-top:26px;}
+.btn{
+  padding:11px 22px;border-radius:10px;border:1px solid var(--line);background:var(--bg-2);color:var(--text);
+  font-family:var(--font-ui);font-size:13.5px;cursor:pointer;transition:transform .15s ease, border-color .15s ease, filter .15s ease, box-shadow .15s ease;
+  display:flex;align-items:center;gap:8px;
+}
+.btn:hover{border-color:var(--muted-2);transform:translateY(-1px);}
+.btn.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;color:#06120f;font-weight:700;
+  box-shadow:0 10px 26px -12px rgba(79,216,196,.6);
+}
+.btn.primary:hover{filter:brightness(1.08);transform:translateY(-2px);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+@media(max-width:640px){.summary-grid{grid-template-columns:1fr;}}
+.summary-item{background:var(--bg-2);border:1px solid var(--line);border-radius:9px;padding:11px 14px;font-size:12.5px;}
+.summary-item b{display:block;color:var(--muted-2);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-family:var(--font-mono);}
+.xml-box{
+  background:#080c12;border:1px solid var(--line);border-radius:10px;padding:16px;max-height:340px;overflow:auto;
+  font-size:11.5px;line-height:1.6;white-space:pre;
+}
+
+.final-panel{text-align:center;padding:30px 10px 10px;}
+.check-circle{
+  width:74px;height:74px;border-radius:50%;background:rgba(79,216,196,.1);border:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 18px;position:relative;
+}
+.check-circle svg{width:34px;height:34px;}
+.check-circle path{
+  stroke:var(--accent);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:40;stroke-dashoffset:40;animation:draw .5s ease forwards .15s;
+}
+@keyframes draw{to{stroke-dashoffset:0;}}
+.pulse-ring{position:absolute;inset:-8px;border-radius:50%;border:1px solid var(--accent);opacity:0;animation:pulse 1.8s ease-out infinite;}
+@keyframes pulse{0%{opacity:.6;transform:scale(.9);}100%{opacity:0;transform:scale(1.35);}}
+
+.download-btn{
+  display:inline-flex;align-items:center;gap:10px;padding:15px 32px;border-radius:11px;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#06120f;font-weight:700;font-size:15px;
+  cursor:pointer;font-family:var(--font-ui);box-shadow:0 12px 30px -12px rgba(79,216,196,.55);transition:.2s;
+}
+.download-btn:hover{transform:translateY(-2px);filter:brightness(1.05);}
+.usage-note{
+  background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-top:24px;
+  font-size:13px;color:var(--muted);
+}
+.usage-note b{color:var(--text);}
+.usage-note ol{margin:8px 0 0;padding-inline-start:20px;}
+.usage-note li{margin-bottom:5px;}
+
+footer{text-align:center;color:var(--muted-2);font-size:11.5px;padding:20px;font-family:var(--font-mono);}
+@media(max-width:900px){
+  .layout{flex-direction:column;}
+  .sidebar{position:static;width:100%;flex-direction:row;flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">XML</div>
+    <div class="brand-text">
+      <h1 id="appTitle">سازنده‌ی autounattend.xml</h1>
+      <p id="appSubtitle">unattended Windows 10 / 11 setup builder</p>
+    </div>
+  </div>
+  <div class="top-right">
+    <div class="lang-toggle">
+      <button id="langFaBtn" class="active">FA</button>
+      <button id="langEnBtn">EN</button>
+    </div>
+    <a class="source-link" id="sourceLink" href="https://schneegans.de/windows/unattend-generator/" target="_blank">schneegans.de/windows/unattend-generator ↗</a>
+  </div>
+</div>
+
+<div class="diskbar-wrap">
+  <div class="diskbar-label"><span id="diskbar-caption">STEP 1 / 11</span><span id="diskbar-pct">0%</span></div>
+  <div class="diskbar" id="diskbar"></div>
+</div>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="content">
+    <div class="card" id="card"></div>
+  </div>
+</div>
+
+<footer id="footerNote">generated locally in your browser · no data leaves your machine</footer>
+
+<script>
+/* ================= I18N ================= */
+const STR = {
+fa:{
+  appTitle:'سازنده‌ی autounattend.xml', appSubtitle:'unattended Windows 10 / 11 setup builder',
+  sourceLink:'الهام‌گرفته از schneegans.de/windows/unattend-generator ↗',
+  footer:'همه‌چیز داخل مرورگر شما ساخته می‌شود · هیچ داده‌ای ارسال نمی‌شود',
+  stepCaption:(i,n,tt)=>`مرحله ${i} از ${n} — ${tt}`,
+  prev:'◂ مرحله قبل', next:'مرحله بعد ▸', finish:'ساخت فایل',
+  steps:['زبان و صفحه‌کلید','نسخه و کلید ویندوز','تنظیمات نصب و دیسک','نام سیستم و کاربران','منطقه‌ی زمانی و پسورد','حریم خصوصی','تنظیمات سیستمی','اکسپلورر و ظاهر','حذف اپ‌های اضافی','اسکریپت دلخواه','بازبینی و ساخت فایل'],
+
+  langH:'زبان و صفحه‌کلید', langS:'زبان نمایش ویندوز و چیدمان صفحه‌کلید ورودی را انتخاب کنید.',
+  uiLangLbl:'زبان نمایش ویندوز (Display Language)', uiLangHint:'این زبان باید با زبان فایل ISO ویندوز شما یکسان باشد.',
+  kbLbl:'چیدمان صفحه‌کلید (Keyboard Layout)',
+  geoLbl:'موقعیت مکانی (Home Location)', geoHint:'کشوری که برای محتوای بومی، Microsoft Store و تنظیمات منطقه‌ای استفاده می‌شود.',
+
+  edH:'نسخه و کلید محصول ویندوز', edS:'نسخه‌ای که باید نصب شود و نحوه‌ی وارد کردن کلید را مشخص کنید.',
+  keyModeLbl:'روش کلید محصول',
+  keyGenericT:'کلید عمومی (Generic)', keyGenericD:'نصب می‌شود ولی فعال‌سازی نمی‌شود',
+  keyCustomT:'کلید دلخواه', keyCustomD:'کلید ۲۵ کاراکتری خودتان',
+  keyInterT:'پرسیدن در حین نصب', keyInterD:'در ویزارد ویندوز وارد کنید',
+  editionLbl:'نسخه‌ی ویندوز', pkeyLbl:'کلید محصول',
+  archLbl:'معماری پردازنده', arch64:'Intel/AMD 64-bit', arch32:'Intel/AMD 32-bit', archArm:'Windows on Arm64',
+
+  setupH:'تنظیمات نصب و پارتیشن‌بندی دیسک', setupS:'دیسک به‌طور خودکار پاک، پارتیشن‌بندی و فرمت می‌شود (تمام داده‌های قبلی پاک خواهد شد).',
+  bypassWin11T:'دور زدن شرایط سخت‌افزاری ویندوز ۱۱', bypassWin11D:'نیاز به TPM 2.0، Secure Boot و حداقل RAM/CPU حذف می‌شود.',
+  bypassNROT:'نصب بدون نیاز به اینترنت', bypassNROD:'امکان ساخت حساب کاربری آفلاین در صفحه‌ی OOBE ویندوز ۱۱.',
+  hidePST:'مخفی کردن پنجره‌های PowerShell در حین نصب', hidePSD:'اسکریپت‌ها بی‌صدا و بدون پنجره اجرا می‌شوند.',
+  keepSensT:'نگه‌داشتن فایل‌های حساس بعد از نصب', keepSensD:'فایل unattend.xml روی دیسک باقی می‌ماند (پیش‌فرض حذف می‌شود).',
+  diskLayoutLbl:'نوع پارتیشن‌بندی دیسک',
+  gptT:'GPT (UEFI)', gptD:'برای سیستم‌های مدرن و ویندوز ۱۱', mbrT:'MBR (BIOS قدیمی)', mbrD:'برای سیستم‌های Legacy BIOS',
+  recoveryT:'ساخت پارتیشن بازیابی (Recovery)', recoveryD:'فضایی جدا برای Windows RE در نظر گرفته می‌شود.',
+
+  accH:'نام سیستم و حساب‌های کاربری', accS:'نام کامپیوتر و حساب‌های کاربری محلی (آفلاین) که هنگام نصب ساخته می‌شوند.',
+  cnLbl:'نام کامپیوتر', cnRandT:'تصادفی توسط ویندوز', cnRandD:'مثل DESKTOP-ZFAH8Z2', cnCustomT:'دلخواه',
+  accListLbl:'حساب‌های کاربری محلی (حداکثر ۵ عدد)',
+  accNum:'ACCOUNT', accRemove:'حذف', accName:'نام کاربری', accDisplay:'نام نمایشی (اختیاری)', accGroup:'گروه',
+  accPass:'رمز عبور (خالی = بدون رمز)', addAcc:'+ افزودن حساب کاربری',
+  autologonLbl:'ورود خودکار (Auto Logon) پس از نصب', autoFirstT:'اولین حساب ساخته‌شده', autoNoneT:'بدون ورود خودکار',
+
+  timeH:'منطقه‌ی زمانی و انقضای رمز عبور', timeS:'',
+  tzLbl:'منطقه‌ی زمانی', tzAutoT:'تشخیص خودکار', tzAutoD:'بر اساس زبان و منطقه', tzCustomT:'دستی',
+  pwExpLbl:'انقضای رمز عبور', pwNeverT:'هرگز منقضی نشود', pwNeverD:'توصیه NIST', pwDefT:'پیش‌فرض ویندوز', pwDefD:'۴۲ روز',
+
+  privH:'تنظیمات حریم خصوصی (Express Settings)', privS:'گزینه‌های دریافت داده‌های تشخیصی، تبلیغات و موقعیت مکانی توسط مایکروسافت.',
+  privDisT:'غیرفعال کردن همه', privDisD:'حداکثر حریم خصوصی', privEnT:'فعال کردن همه', privEnD:'شخصی‌سازی و تبلیغات فعال',
+
+  tweakH:'تنظیمات سیستمی', tweakS:'هر مورد به‌صورت دستور اجرایی هنگام اولین ورود کاربر اعمال می‌شود.',
+  wuT:'فعال بودن Windows Update', wuD:'خاموش کردن → سرویس آپدیت غیرفعال می‌شود.',
+  uacT:'فعال بودن User Account Control (UAC)', uacD:'خاموش کردن برای محیط تست توصیه می‌شود، نه سیستم روزمره.',
+  ssT:'فعال بودن SmartScreen (ویندوز و Edge)', ssD:'',
+  fsT:'فعال بودن Fast Startup', fsD:'',
+  srT:'فعال بودن System Restore', srD:'خاموش کردن فضای دیسک را آزاد می‌کند اما ریستور پوینت نخواهید داشت.',
+
+  expH:'اکسپلورر، دسکتاپ و جلوه‌های بصری', expS:'',
+  shfT:'نمایش فایل‌های مخفی', shfD:'',
+  sxeT:'نمایش پسوند فایل‌های شناخته‌شده', sxeD:'',
+  ccmT:'منوی کلیک راست کلاسیک (ویندوز ۱۱)', ccmD:'',
+  tpcT:'باز شدن اکسپلورر روی This PC به‌جای Quick Access', tpcD:'',
+  etT:'نمایش گزینه‌ی End Task در نوار وظیفه', etD:'',
+  veLbl:'جلوه‌های بصری (Visual Effects)', veDefT:'پیش‌فرض ویندوز', vePerfT:'بهترین کارایی', vePerfD:'حداقل جلوه‌های گرافیکی', veApT:'بهترین ظاهر',
+
+  bloatH:'حذف اپ‌های پیش‌فرض (Bloatware)', bloatS:'اپ‌های انتخابی هنگام اولین ورود کاربر حذف می‌شوند.',
+
+  scriptH:'اسکریپت دلخواه (اختیاری)', scriptS:'یک اسکریپت PowerShell که هنگام اولین ورود کاربر مدیر اجرا می‌شود — برای نصب برنامه، تنظیمات شرکتی و غیره.',
+  scriptPh:'# مثال:\nwinget install Git.Git -e --silent',
+
+  revH:'بازبینی نهایی و دانلود فایل', revS:'همه چیز آماده‌است. خلاصه‌ی تنظیمات را بررسی و فایل autounattend.xml را دانلود کنید.',
+  sumLang:'زبان', sumGeo:'موقعیت مکانی', sumEdition:'نسخه ویندوز', sumArch:'معماری', sumPart:'پارتیشن‌بندی', sumBypass:'دور زدن شرایط ویندوز ۱۱',
+  sumCn:'نام کامپیوتر', sumAccCount:'تعداد حساب‌های کاربری', sumTz:'منطقه‌ی زمانی', sumPriv:'حریم خصوصی', sumBloat:'اپ‌های حذف‌شده',
+  yes:'بله', no:'خیر', random:'تصادفی', interactive:'پرسش تعاملی', customKeyLbl:'کلید دلخواه', auto:'خودکار', disabled:'غیرفعال', enabled:'فعال', items:'مورد',
+  readyMsg:'فایل شما آماده‌ی دانلود است', dlBtn:'⬇ دانلود autounattend.xml',
+  usageTitle:'راهنمای استفاده',
+  usage1:'فایل <b class="mono">autounattend.xml</b> را در ریشه‌ی یک فلش‌ USB یا ریشه‌ی فایل ISO ویندوز کپی کنید.',
+  usage2:'از همان درایو بوت کنید؛ Windows Setup به‌طور خودکار این فایل را تشخیص و اجرا می‌کند.',
+  usage3:'تمام تنظیماتی که در این ویزارد انتخاب کردید به‌صورت خودکار اعمال می‌شوند.',
+  usage4:'توجه: پاک‌سازی دیسک، تمام اطلاعات دیسک هدف را برای همیشه حذف می‌کند.',
+  usage5:'در بیلدهای بسیار جدید ویندوز ۱۱ (24H2 به بعد)، برخی روش‌های دور زدن بایپس اینترنت ممکن است توسط مایکروسافت مسدود شده باشد.',
+},
+en:{
+  appTitle:'autounattend.xml builder', appSubtitle:'unattended Windows 10 / 11 setup builder',
+  sourceLink:'inspired by schneegans.de/windows/unattend-generator ↗',
+  footer:'everything is generated locally in your browser · no data leaves your machine',
+  stepCaption:(i,n,tt)=>`Step ${i} of ${n} — ${tt}`,
+  prev:'◂ Back', next:'Next ▸', finish:'Generate file',
+  steps:['Language & keyboard','Windows edition & key','Setup & disk options','Computer name & accounts','Time zone & password','Privacy','System tweaks','Explorer & appearance','Remove bloatware','Custom script','Review & generate'],
+
+  langH:'Language & keyboard', langS:'Choose the Windows display language and the input keyboard layout.',
+  uiLangLbl:'Windows display language', uiLangHint:'This must match the language of your Windows ISO file.',
+  kbLbl:'Keyboard layout',
+  geoLbl:'Home location', geoHint:'The country used for local content, Microsoft Store and regional settings.',
+
+  edH:'Windows edition & product key', edS:'Choose which edition gets installed and how the product key is supplied.',
+  keyModeLbl:'Product key method',
+  keyGenericT:'Generic key', keyGenericD:'Installs, but will not activate',
+  keyCustomT:'Custom key', keyCustomD:'Your own 25-character key',
+  keyInterT:'Ask during setup', keyInterD:'Enter it in the Windows wizard',
+  editionLbl:'Windows edition', pkeyLbl:'Product key',
+  archLbl:'Processor architecture', arch64:'Intel/AMD 64-bit', arch32:'Intel/AMD 32-bit', archArm:'Windows on Arm64',
+
+  setupH:'Setup options & disk partitioning', setupS:'The disk will be automatically wiped, partitioned and formatted (all existing data will be lost).',
+  bypassWin11T:'Bypass Windows 11 hardware requirements', bypassWin11D:'Removes the TPM 2.0, Secure Boot and minimum RAM/CPU checks.',
+  bypassNROT:'Install without an internet connection', bypassNROD:'Allows creating an offline account on the Windows 11 OOBE screen.',
+  hidePST:'Hide PowerShell windows during setup', hidePSD:'Scripts run silently, without a visible window.',
+  keepSensT:'Keep sensitive files after setup', keepSensD:'unattend.xml is kept on disk (deleted by default).',
+  diskLayoutLbl:'Disk partition layout',
+  gptT:'GPT (UEFI)', gptD:'For modern systems and Windows 11', mbrT:'MBR (Legacy BIOS)', mbrD:'For Legacy BIOS systems',
+  recoveryT:'Create a recovery partition', recoveryD:'Reserves separate space for Windows RE.',
+
+  accH:'Computer name & user accounts', accS:'The computer name and local (offline) accounts created during setup.',
+  cnLbl:'Computer name', cnRandT:'Random, generated by Windows', cnRandD:'e.g. DESKTOP-ZFAH8Z2', cnCustomT:'Custom',
+  accListLbl:'Local user accounts (up to 5)',
+  accNum:'ACCOUNT', accRemove:'Remove', accName:'Account name', accDisplay:'Display name (optional)', accGroup:'Group',
+  accPass:'Password (leave empty = no password)', addAcc:'+ Add account',
+  autologonLbl:'Auto logon after setup', autoFirstT:'First account created', autoNoneT:'No auto logon',
+
+  timeH:'Time zone & password expiration', timeS:'',
+  tzLbl:'Time zone', tzAutoT:'Detect automatically', tzAutoD:'Based on language & region', tzCustomT:'Set manually',
+  pwExpLbl:'Password expiration', pwNeverT:'Passwords never expire', pwNeverD:'NIST recommendation', pwDefT:'Windows default', pwDefD:'42 days',
+
+  privH:'Privacy settings (Express Settings)', privS:'Diagnostic data, advertising and location settings sent to Microsoft.',
+  privDisT:'Disable all', privDisD:'Maximum privacy', privEnT:'Enable all', privEnD:'Personalization & ads enabled',
+
+  tweakH:'System tweaks', tweakS:'Each item runs as a command on first user logon.',
+  wuT:'Windows Update enabled', wuD:'Turning off disables the update service.',
+  uacT:'User Account Control (UAC) enabled', uacD:'Only disable for test environments, not daily-use machines.',
+  ssT:'SmartScreen enabled (Windows & Edge)', ssD:'',
+  fsT:'Fast Startup enabled', fsD:'',
+  srT:'System Restore enabled', srD:'Turning off frees disk space, but no restore points will be created.',
+
+  expH:'Explorer, desktop & visual effects', expS:'',
+  shfT:'Show hidden files', shfD:'',
+  sxeT:'Show extensions for known file types', sxeD:'',
+  ccmT:'Classic right-click context menu (Windows 11)', ccmD:'',
+  tpcT:'Open Explorer to This PC instead of Quick Access', tpcD:'',
+  etT:'Show "End Task" in the taskbar', etD:'',
+  veLbl:'Visual effects', veDefT:'Windows default', vePerfT:'Best performance', vePerfD:'Minimal graphical effects', veApT:'Best appearance',
+
+  bloatH:'Remove default apps (bloatware)', bloatS:'Selected apps are removed on first user logon.',
+
+  scriptH:'Custom script (optional)', scriptS:'A PowerShell script that runs on the first admin logon — for installing apps, company policies, etc.',
+  scriptPh:'# example:\nwinget install Git.Git -e --silent',
+
+  revH:'Final review & download', revS:'Everything is ready. Review the summary and download your autounattend.xml file.',
+  sumLang:'Language', sumGeo:'Home location', sumEdition:'Windows edition', sumArch:'Architecture', sumPart:'Partitioning', sumBypass:'Bypass Win 11 checks',
+  sumCn:'Computer name', sumAccCount:'User accounts', sumTz:'Time zone', sumPriv:'Privacy', sumBloat:'Apps removed',
+  yes:'Yes', no:'No', random:'Random', interactive:'Asked interactively', customKeyLbl:'Custom key', auto:'Automatic', disabled:'Disabled', enabled:'Enabled', items:'items',
+  readyMsg:'Your file is ready to download', dlBtn:'⬇ Download autounattend.xml',
+  usageTitle:'How to use this file',
+  usage1:'Copy <b class="mono">autounattend.xml</b> to the root of a USB flash drive, or to the root of your Windows ISO.',
+  usage2:'Boot from that drive — Windows Setup automatically detects and runs this file.',
+  usage3:'Every setting you chose in this wizard is applied automatically.',
+  usage4:'Warning: wiping the disk permanently erases all data on the target disk.',
+  usage5:'On very recent Windows 11 builds (24H2+), some of the internet-connection bypass tricks may be blocked by Microsoft.',
+}
+};
+function t(key){ const v = STR[state.appLang][key]; return v===undefined? key : v; }
+
+/* ================= STATE / DATA ================= */
+const LANGS = [
+  ['fa-IR','فارسی (ایران) / Persian'],['en-US','English (United States)'],['en-GB','English (United Kingdom)'],
+  ['ar-SA','العربية (السعودية) / Arabic'],['bg-BG','Български / Bulgarian'],['zh-CN','中文（简体）/ Chinese Simplified'],
+  ['zh-TW','中文（繁體）/ Chinese Traditional'],['hr-HR','Hrvatski / Croatian'],['cs-CZ','Čeština / Czech'],
+  ['da-DK','Dansk / Danish'],['nl-NL','Nederlands / Dutch'],['et-EE','Eesti / Estonian'],
+  ['fi-FI','Suomi / Finnish'],['fr-FR','Français / French'],['fr-CA','Français (Canada)'],
+  ['de-DE','Deutsch / German'],['el-GR','Ελληνικά / Greek'],['he-IL','עברית / Hebrew'],
+  ['hi-IN','हिन्दी / Hindi'],['hu-HU','Magyar / Hungarian'],['id-ID','Bahasa Indonesia'],
+  ['it-IT','Italiano / Italian'],['ja-JP','日本語 / Japanese'],['kk-KZ','Қазақ тілі / Kazakh'],
+  ['ko-KR','한국어 / Korean'],['lv-LV','Latviešu / Latvian'],['lt-LT','Lietuvių / Lithuanian'],
+  ['nb-NO','Norsk (Bokmål) / Norwegian'],['pl-PL','Polski / Polish'],['pt-PT','Português (Portugal)'],
+  ['pt-BR','Português (Brasil)'],['ro-RO','Română / Romanian'],['ru-RU','Русский / Russian'],
+  ['sr-Latn-RS','Srpski / Serbian Latin'],['sk-SK','Slovenčina / Slovak'],['sl-SI','Slovenščina / Slovenian'],
+  ['es-ES','Español (España)'],['es-MX','Español (México)'],['sv-SE','Svenska / Swedish'],
+  ['th-TH','ไทย / Thai'],['tr-TR','Türkçe / Turkish'],['uk-UA','Українська / Ukrainian'],['vi-VN','Tiếng Việt / Vietnamese'],
+  ['sq-AL','Shqip / Albanian'],['am-ET','አማርኛ / Amharic'],['hy-AM','Հայերեն / Armenian'],['az-Latn-AZ','Azərbaycan / Azerbaijani'],
+  ['bs-Latn-BA','Bosanski / Bosnian'],['ca-ES','Català / Catalan'],['fil-PH','Filipino'],['ka-GE','ქართული / Georgian'],
+  ['gu-IN','ગુજરાતી / Gujarati'],['is-IS','Íslenska / Icelandic'],['ga-IE','Gaeilge / Irish'],['kn-IN','ಕನ್ನಡ / Kannada'],
+  ['km-KH','ខ្មែរ / Khmer'],['lo-LA','ລາວ / Lao'],['mk-MK','Македонски / Macedonian'],['ms-MY','Bahasa Melayu / Malay'],
+  ['ml-IN','മലയാളം / Malayalam'],['mt-MT','Malti / Maltese'],['mr-IN','मराठी / Marathi'],['mn-MN','Монгол / Mongolian'],
+  ['ne-NP','नेपाली / Nepali'],['pa-IN','ਪੰਜਾਬੀ / Punjabi'],['si-LK','සිංහල / Sinhala'],['sw-KE','Kiswahili / Swahili'],
+  ['ta-IN','தமிழ் / Tamil'],['te-IN','తెలుగు / Telugu'],['ur-PK','اردو / Urdu'],['uz-Latn-UZ','Oʻzbek / Uzbek'],
+  ['cy-GB','Cymraeg / Welsh'],['zu-ZA','isiZulu / Zulu'],['bn-BD','বাংলা / Bengali'],['af-ZA','Afrikaans'],
+];
+const KEYBOARDS = [
+  ['0409:00000409','English (US)'],['0809:00000809','English (UK)'],['0429:00000429','فارسی Persian'],
+  ['0401:00000401','العربية Arabic (101)'],['0402:00000402','Български Bulgarian'],['0804:00000804','中文（简体）US layout'],
+  ['0404:00000404','中文（繁體）US layout'],['041a:0000041a','Hrvatski Croatian'],['0405:00000405','Čeština Czech'],
+  ['0406:00000406','Dansk Danish'],['0413:00000413','Nederlands Dutch'],['0425:00000425','Eesti Estonian'],
+  ['040b:0000040b','Suomi Finnish'],['040c:0000040c','Français French'],['0c0c:00000c0c','Français Canadien'],
+  ['0407:00000407','Deutsch German'],['0408:00000408','Ελληνικά Greek'],['040d:0000040d','עברית Hebrew'],
+  ['0439:00000439','हिन्दी Hindi Traditional'],['040e:0000040e','Magyar Hungarian'],['0421:00000409','Bahasa Indonesia (US)'],
+  ['0410:00000410','Italiano Italian'],['0411:00000411','日本語 Japanese'],['043f:00000409','Қазақ Kazakh (US)'],
+  ['0412:00000412','한국어 Korean'],['0426:00000426','Latviešu Latvian'],['0427:00000427','Lietuvių Lithuanian'],
+  ['0414:00000414','Norsk Norwegian'],['0415:00000415','Polski Polish'],['0816:00000816','Português (Portugal)'],
+  ['0416:00010416','Português (Brasil ABNT2)'],['0418:00000418','Română Romanian'],['0419:00000419','Русский Russian'],
+  ['081a:0000081a','Srpski Latin Serbian'],['041b:0000041b','Slovenčina Slovak'],['0424:00000424','Slovenščina Slovenian'],
+  ['0c0a:0000040a','Español (España)'],['080a:0000080a','Español (México)'],['041d:0000041d','Svenska Swedish'],
+  ['041e:0000041e','ไทย Thai Kedmanee'],['041f:0000041f','Türkçe Q'],['0422:00000422','Українська Ukrainian'],
+  ['042a:00000409','Tiếng Việt (US)'],
+  ['041c:0000041c','Shqip Albanian'],['045e:00000409','አማርኛ Amharic (US)'],['042b:0000042b','Հայերեն Armenian'],
+  ['042c:0000042c','Azərbaycan Azerbaijani'],['141a:0000141a','Bosanski Bosnian'],['0403:0000040c','Català Catalan'],
+  ['0464:00000409','Filipino (US)'],['0437:00000437','ქართული Georgian'],['0447:00000447','ગુજરાતી Gujarati'],
+  ['040f:0000040f','Íslenska Icelandic'],['083c:00001809','Gaeilge Irish'],['044b:00000445','ಕನ್ನಡ Kannada'],
+  ['0453:00000453','ខ្មែរ Khmer'],['0454:00000454','ລາວ Lao'],['042f:0000042f','Македонски Macedonian'],
+  ['043e:0000043e','Bahasa Melayu Malay'],['044c:0000044c','മലയാളം Malayalam'],['043a:0000043a','Malti Maltese'],
+  ['044e:0000044e','मराठी Marathi'],['0450:00000450','Монгол Mongolian'],['0461:00000461','नेपाली Nepali'],
+  ['0446:00000446','ਪੰਜਾਬੀ Punjabi'],['045b:0000045b','සිංහල Sinhala'],['0441:00000409','Kiswahili Swahili (US)'],
+  ['0449:00000449','தமிழ் Tamil'],['044a:0000044a','తెలుగు Telugu'],['0420:00000420','اردو Urdu'],
+  ['0443:00000443','Oʻzbek Uzbek'],['0452:00000452','Cymraeg Welsh'],['0435:00000435','isiZulu Zulu'],
+  ['0845:00000845','বাংলা Bengali'],['0436:00000436','Afrikaans'],
+];
+const TIMEZONES = [
+  'Iran Standard Time','UTC','GMT Standard Time','W. Europe Standard Time','Central Europe Standard Time',
+  'Central European Standard Time','Romance Standard Time','FLE Standard Time','GTB Standard Time',
+  'E. Europe Standard Time','Russian Standard Time','Turkey Standard Time','Arabic Standard Time','Arab Standard Time',
+  'Israel Standard Time','Jordan Standard Time','Syria Standard Time','Middle East Standard Time',
+  'Egypt Standard Time','South Africa Standard Time','Morocco Standard Time','Namibia Standard Time',
+  'West Asia Standard Time','Pakistan Standard Time','India Standard Time','Nepal Standard Time',
+  'Bangladesh Standard Time','Sri Lanka Standard Time','Myanmar Standard Time','SE Asia Standard Time',
+  'China Standard Time','Taipei Standard Time','Singapore Standard Time','W. Australia Standard Time',
+  'Tokyo Standard Time','Korea Standard Time','North Asia East Standard Time','Vladivostok Standard Time',
+  'Yakutsk Standard Time','AUS Eastern Standard Time','Cen. Australia Standard Time','Tasmania Standard Time',
+  'New Zealand Standard Time','Fiji Standard Time','Samoa Standard Time','Hawaiian Standard Time',
+  'Alaskan Standard Time','Pacific Standard Time','US Mountain Standard Time','Mountain Standard Time',
+  'Central America Standard Time','Central Standard Time','Canada Central Standard Time','Eastern Standard Time',
+  'SA Pacific Standard Time','SA Eastern Standard Time','Argentina Standard Time','Greenland Standard Time',
+  'Azores Standard Time','Cape Verde Standard Time','Ekaterinburg Standard Time','Omsk Standard Time',
+  'Astrakhan Standard Time','Belarus Standard Time','Kaliningrad Standard Time','Altai Standard Time',
+  'Tomsk Standard Time','Volgograd Standard Time','Georgian Standard Time','Azerbaijan Standard Time',
+  'Armenia Standard Time','Caucasus Standard Time','Afghanistan Standard Time','North Korea Standard Time',
+  'Cuba Standard Time','Haiti Standard Time','Turks And Caicos Standard Time','Paraguay Standard Time',
+  'Venezuela Standard Time','Pacific SA Standard Time','Easter Island Standard Time','Montevideo Standard Time',
+  'Magallanes Standard Time','Newfoundland Standard Time','Atlantic Standard Time','Bahia Standard Time',
+  'Libya Standard Time','Sudan Standard Time','W. Central Africa Standard Time','Line Islands Standard Time',
+  'Tonga Standard Time','Norfolk Standard Time','Lord Howe Standard Time','Marquesas Standard Time',
+  'Aleutian Standard Time','West Pacific Standard Time','Central Pacific Standard Time',
+];
+const GEOLOCATIONS = [
+  ['116','ایران / Iran'],['244','ایالات متحده / United States'],['242','بریتانیا / United Kingdom'],
+  ['94','آلمان / Germany'],['84','فرانسه / France'],['235','ترکیه / Türkiye'],['224','امارات / UAE'],
+  ['205','عربستان سعودی / Saudi Arabia'],['3','افغانستان / Afghanistan'],
+  ['190','پاکستان / Pakistan'],['113','هند / India'],['45','چین / China'],['122','ژاپن / Japan'],
+  ['134','کره جنوبی / South Korea'],['203','روسیه / Russia'],['118','ایتالیا / Italy'],['217','اسپانیا / Spain'],
+  ['176','هلند / Netherlands'],['39','کانادا / Canada'],['12','استرالیا / Australia'],['221','سوئد / Sweden'],
+  ['200','رومانی / Romania'],['121','عراق / Iraq'],['111','اندونزی / Indonesia'],
+  ['251','ویتنام / Vietnam'],['241','اوکراین / Ukraine'],['177','نروژ / Norway'],
+  ['67','مصر / Egypt'],['159','مراکش / Morocco'],['14','اتریش / Austria'],['21','بلژیک / Belgium'],
+  ['61','دانمارک / Denmark'],['77','فنلاند / Finland'],['98','یونان / Greece'],['109','مجارستان / Hungary'],
+  ['68','ایرلند / Ireland'],['137','قزاقستان / Kazakhstan'],['201','فیلیپین / Philippines'],
+  ['215','سنگاپور / Singapore'],['223','سوئیس / Switzerland'],['51','کلمبیا / Colombia'],
+  ['32','برزیل / Brazil'],['166','مکزیک / Mexico'],['11','آرژانتین / Argentina'],['46','شیلی / Chile'],
+  ['209','آفریقای جنوبی / South Africa'],['183','نیوزیلند / New Zealand'],['117','اسرائیل / Israel'],
+  ['126','اردن / Jordan'],['175','نیجریه / Nigeria'],['197','قطر / Qatar'],['136','کویت / Kuwait'],
+];
+const EDITIONS = [
+  ['Pro','VK7JG-NPHTM-C97JM-9MPGT-3V66T'],
+  ['Home','YTMG3-N6DKC-DKB77-7M9GH-8HVX7'],
+  ['Home Single Language','BT79Q-G7N6G-PGBYW-4YWX6-6F4BT'],
+  ['Education','NW6C2-QMPVW-D7KKK-3GKT6-VCFB2'],
+  ['Enterprise','NPPR9-FWDCX-D2C8J-H872K-2YT43'],
+  ['Pro Education','6TP4R-GNPTD-KYYHQ-7B7DP-J447Y'],
+  ['Pro for Workstations','DXG7C-N36C4-C4HTG-X4T3X-2YV77'],
+];
+const BLOATWARE = [
+  ['Clipchamp','*Clipchamp*'],['Cortana','*549981C3F5F10*'],['Feedback Hub','*WindowsFeedbackHub*'],
+  ['Get Help','*GetHelp*'],['Maps','*WindowsMaps*'],['Mixed Reality Portal','*MixedReality.Portal*'],
+  ['Movies & TV','*ZuneVideo*'],['News','*BingNews*'],['Office 365 / 365 Hub','*MicrosoftOfficeHub*'],
+  ['OneNote (Store)','*Office.OneNote*'],['Paint 3D','*MSPaint*'],['People','*People*'],
+  ['Photos','*Windows.Photos*'],['Power Automate','*PowerAutomateDesktop*'],['Skype','*SkypeApp*'],
+  ['Snipping Tool (modern)','*ScreenSketch*'],['Solitaire Collection','*MicrosoftSolitaireCollection*'],
+  ['Sticky Notes','*MicrosoftStickyNotes*'],['Teams','*MicrosoftTeams*'],['Tips','*Getstarted*'],
+  ['To Do','*Todos*'],['Voice Recorder','*WindowsSoundRecorder*'],['Weather','*BingWeather*'],
+  ['Xbox apps','*Xbox*'],['Your Phone / Phone Link','*YourPhone*'],['3D Viewer','*Microsoft3DViewer*'],
+  ['Camera','*WindowsCamera*'],['Family','*ParentalControls*'],['Mail and Calendar','*windowscommunicationsapps*'],
+  ['Quick Assist','*QuickAssist*'],['Clock','*WindowsAlarms*'],['Copilot','*Microsoft.Copilot*'],
+  ['Dev Home','*Windows.DevHome*'],['Notepad (modern)','*WindowsNotepad*'],['OneDrive','__ONEDRIVE__'],
+];
+
+const state = {
+  appLang:'fa',
+  uiLang:'fa-IR', keyboard:'0429:00000429', geoId:'116',
+  keyMode:'generic', edition:'Pro', customKey:'',
+  arch:'amd64',
+  bypassWin11:true, bypassNRO:true, hidePowerShell:false, keepSensitiveFiles:false,
+  diskLayout:'gpt', recoveryPartition:true,
+  computerNameMode:'random', computerName:'',
+  accounts:[{name:'User',display:'',password:'',group:'Administrators'}],
+  autologonMode:'first',
+  timezoneMode:'auto', timezone:'Iran Standard Time',
+  passwordExpiration:'never',
+  express:'disable',
+  uac:true, smartscreen:true, fastStartup:true, systemRestore:true, windowsUpdate:true,
+  showHiddenFiles:false, showExtensions:true, classicContext:false, thisPCDefault:true, endTask:false,
+  visualEffects:'default',
+  bloat:{},
+  firstLogonScript:''
+};
+
+/* ================= STEPS ================= */
+const stepRenderers = [renderLang, renderEdition, renderSetup, renderAccounts, renderTime, renderPrivacy, renderTweaks, renderExplorer, renderBloat, renderScript, renderReview];
+const STEP_ICONS = ['🌐','🔑','💽','👤','🕒','🔒','⚙️','🗂️','🧹','📜','✅'];
+let current = 0;
+
+function el(html){const d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+
+function renderSidebar(){
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML='';
+  const titles = t('steps');
+  titles.forEach((title,i)=>{
+    const div = el(`<div class="step-nav ${i===current?'active':i<current?'visited':''}">
+      <div class="num">${i<current?'✓':STEP_ICONS[i]}</div><div>${title}</div></div>`);
+    div.onclick=()=>{ current=i; renderAll(); };
+    sb.appendChild(div);
+  });
+  const bar = document.getElementById('diskbar');
+  bar.innerHTML='';
+  titles.forEach((title,i)=>{
+    const p = el(`<div class="part ${i<current?'done':i===current?'current':''}" title="${title}">${i===current? (i+1):''}</div>`);
+    p.onclick=()=>{current=i;renderAll();};
+    bar.appendChild(p);
+  });
+  document.getElementById('diskbar-caption').textContent = t('stepCaption')(current+1, titles.length, titles[current]);
+  document.getElementById('diskbar-pct').textContent = Math.round((current)/(titles.length-1)*100)+'%';
+}
+
+function navButtons(container){
+  const wrap = el(`<div class="nav-buttons">
+    <button class="btn" id="prevBtn">${t('prev')}</button>
+    <button class="btn primary" id="nextBtn">${current===stepRenderers.length-1?t('finish'):t('next')}</button>
+  </div>`);
+  container.appendChild(wrap);
+  wrap.querySelector('#prevBtn').disabled = current===0;
+  wrap.querySelector('#prevBtn').onclick=()=>{current--;renderAll();};
+  wrap.querySelector('#nextBtn').onclick=()=>{ if(current<stepRenderers.length-1){current++;renderAll();} };
+}
+
+function card(){ const c=document.getElementById('card'); c.innerHTML=''; return c; }
+function heading(c,title,sub){ c.appendChild(el(`<h2>${title}</h2>`)); if(sub) c.appendChild(el(`<p class="sub">${sub}</p>`)); }
+
+function renderLang(){
+  const c=card();
+  heading(c,t('langH'),t('langS'));
+  const f1=el(`<div class="field"><label class="title">${t('uiLangLbl')}</label>
+    <select id="uiLang"></select>
+    <div class="hint">${t('uiLangHint')}</div></div>`);
+  const sel1=f1.querySelector('select');
+  LANGS.forEach(([code,name])=>sel1.appendChild(el(`<option value="${code}" ${code===state.uiLang?'selected':''}>${name}</option>`)));
+  sel1.onchange=e=>state.uiLang=e.target.value;
+  c.appendChild(f1);
+
+  const f2=el(`<div class="field"><label class="title">${t('kbLbl')}</label>
+    <select id="kb"></select></div>`);
+  const sel2=f2.querySelector('select');
+  KEYBOARDS.forEach(([code,name])=>sel2.appendChild(el(`<option value="${code}" ${code===state.keyboard?'selected':''}>${name}</option>`)));
+  sel2.onchange=e=>state.keyboard=e.target.value;
+  c.appendChild(f2);
+
+  const f3=el(`<div class="field"><label class="title">${t('geoLbl')}</label>
+    <select id="geo"></select>
+    <div class="hint">${t('geoHint')}</div></div>`);
+  const sel3=f3.querySelector('select');
+  GEOLOCATIONS.forEach(([id,name])=>sel3.appendChild(el(`<option value="${id}" ${id===state.geoId?'selected':''}>${name}</option>`)));
+  sel3.onchange=e=>state.geoId=e.target.value;
+  c.appendChild(f3);
+
+  navButtons(c);
+}
+
+function renderEdition(){
+  const c=card();
+  heading(c,t('edH'),t('edS'));
+
+  const f=el(`<div class="field"><label class="title">${t('keyModeLbl')}</label>
+    <div class="choice-grid">
+      <div class="choice" data-v="generic"><div class="t">${t('keyGenericT')}</div><div class="d">${t('keyGenericD')}</div></div>
+      <div class="choice" data-v="custom"><div class="t">${t('keyCustomT')}</div><div class="d">${t('keyCustomD')}</div></div>
+      <div class="choice" data-v="interactive"><div class="t">${t('keyInterT')}</div><div class="d">${t('keyInterD')}</div></div>
+    </div></div>`);
+  f.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.keyMode) ch.classList.add('selected');
+    ch.onclick=()=>{state.keyMode=ch.dataset.v; renderEdition();};
+  });
+  c.appendChild(f);
+
+  if(state.keyMode==='generic'){
+    const fe=el(`<div class="field"><label class="title">${t('editionLbl')}</label><select id="ed"></select></div>`);
+    const s=fe.querySelector('select');
+    EDITIONS.forEach(([name])=>s.appendChild(el(`<option value="${name}" ${name===state.edition?'selected':''}>${name}</option>`)));
+    s.onchange=e=>state.edition=e.target.value;
+    c.appendChild(fe);
+  }
+  if(state.keyMode==='custom'){
+    const fk=el(`<div class="field"><label class="title">${t('pkeyLbl')}</label>
+      <input class="ltr-input" id="ckey" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX" value="${esc(state.customKey)}"></div>`);
+    fk.querySelector('input').oninput=e=>state.customKey=e.target.value.trim();
+    c.appendChild(fk);
+  }
+
+  const f3=el(`<div class="field"><label class="title">${t('archLbl')}</label>
+    <div class="choice-grid">
+      <div class="choice" data-v="amd64"><div class="t">${t('arch64')}</div></div>
+      <div class="choice" data-v="x86"><div class="t">${t('arch32')}</div></div>
+      <div class="choice" data-v="arm64"><div class="t">${t('archArm')}</div></div>
+    </div></div>`);
+  f3.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.arch) ch.classList.add('selected');
+    ch.onclick=()=>{state.arch=ch.dataset.v; renderEdition();};
+  });
+  c.appendChild(f3);
+
+  navButtons(c);
+}
+
+function toggleField(container,key,title,desc){
+  const row=el(`<div class="toggle-row"><div class="txt"><div class="t">${title}</div>${desc?`<div class="d">${desc}</div>`:''}</div>
+    <div class="switch ${state[key]?'on':''}"><div class="knob"></div></div></div>`);
+  row.querySelector('.switch').onclick=(e)=>{ state[key]=!state[key]; e.currentTarget.classList.toggle('on',state[key]); };
+  container.appendChild(row);
+}
+
+function renderSetup(){
+  const c=card();
+  heading(c,t('setupH'),t('setupS'));
+
+  const box=el('<div style="margin-bottom:8px"></div>');
+  toggleField(box,'bypassWin11',t('bypassWin11T'),t('bypassWin11D'));
+  toggleField(box,'bypassNRO',t('bypassNROT'),t('bypassNROD'));
+  toggleField(box,'hidePowerShell',t('hidePST'),t('hidePSD'));
+  toggleField(box,'keepSensitiveFiles',t('keepSensT'),t('keepSensD'));
+  c.appendChild(box);
+
+  const f=el(`<div class="field" style="margin-top:16px;"><label class="title">${t('diskLayoutLbl')}</label>
+    <div class="choice-grid">
+      <div class="choice" data-v="gpt"><div class="t">${t('gptT')}</div><div class="d">${t('gptD')}</div></div>
+      <div class="choice" data-v="mbr"><div class="t">${t('mbrT')}</div><div class="d">${t('mbrD')}</div></div>
+    </div></div>`);
+  f.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.diskLayout) ch.classList.add('selected');
+    ch.onclick=()=>{state.diskLayout=ch.dataset.v; renderSetup();};
+  });
+  c.appendChild(f);
+
+  const box2=el('<div></div>');
+  toggleField(box2,'recoveryPartition',t('recoveryT'),t('recoveryD'));
+  c.appendChild(box2);
+
+  navButtons(c);
+}
+
+function renderAccounts(){
+  const c=card();
+  heading(c,t('accH'),t('accS'));
+
+  const f=el(`<div class="field"><label class="title">${t('cnLbl')}</label>
+    <div class="choice-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="choice" data-v="random"><div class="t">${t('cnRandT')}</div><div class="d">${t('cnRandD')}</div></div>
+      <div class="choice" data-v="custom"><div class="t">${t('cnCustomT')}</div></div>
+    </div></div>`);
+  f.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.computerNameMode) ch.classList.add('selected');
+    ch.onclick=()=>{state.computerNameMode=ch.dataset.v; renderAccounts();};
+  });
+  c.appendChild(f);
+  if(state.computerNameMode==='custom'){
+    const fc=el(`<div class="field"><input class="ltr-input" placeholder="MY-PC" value="${esc(state.computerName)}"></div>`);
+    fc.querySelector('input').oninput=e=>state.computerName=e.target.value.trim();
+    c.appendChild(fc);
+  }
+
+  c.appendChild(el(`<label class="title" style="display:block;margin:22px 0 12px;">${t('accListLbl')}</label>`));
+  const accWrap=el('<div class="accounts"></div>');
+  state.accounts.forEach((acc,i)=>{
+    const ac=el(`<div class="account-card">
+      <div class="account-head"><span class="tag">${t('accNum')} #${i+1}</span>
+        ${state.accounts.length>1?`<button class="rm-btn">${t('accRemove')}</button>`:''}</div>
+      <div class="row3">
+        <div class="field" style="margin-bottom:0"><label class="title">${t('accName')}</label><input class="ltr-input nm" value="${esc(acc.name)}"></div>
+        <div class="field" style="margin-bottom:0"><label class="title">${t('accDisplay')}</label><input class="dn" value="${esc(acc.display)}"></div>
+        <div class="field" style="margin-bottom:0"><label class="title">${t('accGroup')}</label>
+          <select class="gp"><option value="Administrators" ${acc.group==='Administrators'?'selected':''}>Administrators</option><option value="Users" ${acc.group==='Users'?'selected':''}>Users</option></select>
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;margin-bottom:0"><label class="title">${t('accPass')}</label><input class="ltr-input pw" type="text" value="${esc(acc.password)}"></div>
+    </div>`);
+    ac.querySelector('.nm').oninput=e=>acc.name=e.target.value;
+    ac.querySelector('.dn').oninput=e=>acc.display=e.target.value;
+    ac.querySelector('.gp').onchange=e=>acc.group=e.target.value;
+    ac.querySelector('.pw').oninput=e=>acc.password=e.target.value;
+    const rm=ac.querySelector('.rm-btn'); if(rm) rm.onclick=()=>{state.accounts.splice(i,1); renderAccounts();};
+    accWrap.appendChild(ac);
+  });
+  c.appendChild(accWrap);
+  if(state.accounts.length<5){
+    const addBtn=el(`<div class="add-btn" style="margin-top:12px;">${t('addAcc')}</div>`);
+    addBtn.onclick=()=>{state.accounts.push({name:'User'+(state.accounts.length+1),display:'',password:'',group:'Administrators'}); renderAccounts();};
+    c.appendChild(addBtn);
+  }
+
+  const f2=el(`<div class="field" style="margin-top:22px;"><label class="title">${t('autologonLbl')}</label>
+    <div class="choice-grid">
+      <div class="choice" data-v="first"><div class="t">${t('autoFirstT')}</div></div>
+      <div class="choice" data-v="none"><div class="t">${t('autoNoneT')}</div></div>
+    </div></div>`);
+  f2.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.autologonMode) ch.classList.add('selected');
+    ch.onclick=()=>{state.autologonMode=ch.dataset.v; renderAccounts();};
+  });
+  c.appendChild(f2);
+
+  navButtons(c);
+}
+
+function renderTime(){
+  const c=card();
+  heading(c,t('timeH'),t('timeS'));
+  const f=el(`<div class="field"><label class="title">${t('tzLbl')}</label>
+    <div class="choice-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="choice" data-v="auto"><div class="t">${t('tzAutoT')}</div><div class="d">${t('tzAutoD')}</div></div>
+      <div class="choice" data-v="custom"><div class="t">${t('tzCustomT')}</div></div>
+    </div></div>`);
+  f.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.timezoneMode) ch.classList.add('selected');
+    ch.onclick=()=>{state.timezoneMode=ch.dataset.v; renderTime();};
+  });
+  c.appendChild(f);
+  if(state.timezoneMode==='custom'){
+    const ft=el(`<div class="field"><select class="ltr-input" id="tz"></select></div>`);
+    const s=ft.querySelector('select');
+    TIMEZONES.forEach(tz=>s.appendChild(el(`<option value="${tz}" ${tz===state.timezone?'selected':''}>${tz}</option>`)));
+    s.onchange=e=>state.timezone=e.target.value;
+    c.appendChild(ft);
+  }
+
+  const f2=el(`<div class="field" style="margin-top:10px;"><label class="title">${t('pwExpLbl')}</label>
+    <div class="choice-grid">
+      <div class="choice" data-v="never"><div class="t">${t('pwNeverT')}</div><div class="d">${t('pwNeverD')}</div></div>
+      <div class="choice" data-v="default"><div class="t">${t('pwDefT')}</div><div class="d">${t('pwDefD')}</div></div>
+    </div></div>`);
+  f2.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.passwordExpiration) ch.classList.add('selected');
+    ch.onclick=()=>{state.passwordExpiration=ch.dataset.v; renderTime();};
+  });
+  c.appendChild(f2);
+  navButtons(c);
+}
+
+function renderPrivacy(){
+  const c=card();
+  heading(c,t('privH'),t('privS'));
+  const f=el(`<div class="field"><div class="choice-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="choice" data-v="disable"><div class="t">${t('privDisT')}</div><div class="d">${t('privDisD')}</div></div>
+    <div class="choice" data-v="enable"><div class="t">${t('privEnT')}</div><div class="d">${t('privEnD')}</div></div>
+  </div></div>`);
+  f.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.express) ch.classList.add('selected');
+    ch.onclick=()=>{state.express=ch.dataset.v; renderPrivacy();};
+  });
+  c.appendChild(f);
+  navButtons(c);
+}
+
+function renderTweaks(){
+  const c=card();
+  heading(c,t('tweakH'),t('tweakS'));
+  const box=el('<div></div>');
+  toggleField(box,'windowsUpdate',t('wuT'),t('wuD'));
+  toggleField(box,'uac',t('uacT'),t('uacD'));
+  toggleField(box,'smartscreen',t('ssT'),t('ssD'));
+  toggleField(box,'fastStartup',t('fsT'),t('fsD'));
+  toggleField(box,'systemRestore',t('srT'),t('srD'));
+  c.appendChild(box);
+  navButtons(c);
+}
+
+function renderExplorer(){
+  const c=card();
+  heading(c,t('expH'),t('expS'));
+  const box=el('<div></div>');
+  toggleField(box,'showHiddenFiles',t('shfT'),t('shfD'));
+  toggleField(box,'showExtensions',t('sxeT'),t('sxeD'));
+  toggleField(box,'classicContext',t('ccmT'),t('ccmD'));
+  toggleField(box,'thisPCDefault',t('tpcT'),t('tpcD'));
+  toggleField(box,'endTask',t('etT'),t('etD'));
+  c.appendChild(box);
+
+  const f=el(`<div class="field" style="margin-top:20px;"><label class="title">${t('veLbl')}</label>
+    <div class="choice-grid">
+      <div class="choice" data-v="default"><div class="t">${t('veDefT')}</div></div>
+      <div class="choice" data-v="performance"><div class="t">${t('vePerfT')}</div><div class="d">${t('vePerfD')}</div></div>
+      <div class="choice" data-v="appearance"><div class="t">${t('veApT')}</div></div>
+    </div></div>`);
+  f.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.visualEffects) ch.classList.add('selected');
+    ch.onclick=()=>{state.visualEffects=ch.dataset.v; renderExplorer();};
+  });
+  c.appendChild(f);
+  navButtons(c);
+}
+
+function renderBloat(){
+  const c=card();
+  heading(c,t('bloatH'),t('bloatS'));
+  const grid=el('<div class="checkbox-grid"></div>');
+  BLOATWARE.forEach(([name,pattern])=>{
+    const on = !!state.bloat[pattern];
+    const item=el(`<div class="chk ${on?'on':''}"><div class="box"></div><div>${name}</div></div>`);
+    item.onclick=()=>{ state.bloat[pattern]=!state.bloat[pattern]; renderBloat(); };
+    grid.appendChild(item);
+  });
+  c.appendChild(grid);
+  navButtons(c);
+}
+
+function renderScript(){
+  const c=card();
+  heading(c,t('scriptH'),t('scriptS'));
+  const f=el(`<div class="field"><textarea id="scr" placeholder="${esc(t('scriptPh'))}">${esc(state.firstLogonScript)}</textarea></div>`);
+  f.querySelector('textarea').oninput=e=>state.firstLogonScript=e.target.value;
+  c.appendChild(f);
+  navButtons(c);
+}
+
+function renderReview(){
+  const c=card();
+  heading(c,t('revH'),t('revS'));
+
+  const s=el('<div class="summary-grid"></div>');
+  const items=[
+    [t('sumLang'),(LANGS.find(l=>l[0]===state.uiLang)||[,state.uiLang])[1]],
+    [t('sumGeo'),(GEOLOCATIONS.find(g=>g[0]===state.geoId)||[,state.geoId])[1]],
+    [t('sumEdition'), state.keyMode==='generic'?state.edition:(state.keyMode==='custom'?t('customKeyLbl'):t('interactive'))],
+    [t('sumArch'),state.arch],
+    [t('sumPart'),state.diskLayout.toUpperCase()+(state.recoveryPartition?' + Recovery':'')],
+    [t('sumBypass'), state.bypassWin11?t('yes'):t('no')],
+    [t('sumCn'), state.computerNameMode==='random'?t('random'):(state.computerName||'—')],
+    [t('sumAccCount'), state.accounts.filter(a=>a.name.trim()).length],
+    [t('sumTz'), state.timezoneMode==='auto'?t('auto'):state.timezone],
+    [t('sumPriv'), state.express==='disable'?t('disabled'):t('enabled')],
+    [t('sumBloat'), Object.values(state.bloat).filter(Boolean).length + ' ' + t('items')],
+  ];
+  items.forEach(([k,v])=>s.appendChild(el(`<div class="summary-item"><b>${k}</b>${v}</div>`)));
+  c.appendChild(s);
+
+  const xml = generateXML();
+  const box=el(`<div class="xml-box mono" id="xmlPreview"></div>`);
+  box.textContent = xml.length>6000? xml.slice(0,6000)+'\n\n...':xml;
+  c.appendChild(box);
+
+  const finalPanel = el(`<div class="final-panel">
+    <div class="check-circle"><div class="pulse-ring"></div>
+      <svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg>
+    </div>
+    <p style="color:var(--muted);margin-bottom:20px;">${t('readyMsg')}</p>
+    <button class="download-btn" id="dlBtn">${t('dlBtn')}</button>
+  </div>`);
+  c.appendChild(finalPanel);
+  finalPanel.querySelector('#dlBtn').onclick=downloadXML;
+
+  c.appendChild(el(`<div class="usage-note">
+    <b>${t('usageTitle')}</b>
+    <ol>
+      <li>${t('usage1')}</li>
+      <li>${t('usage2')}</li>
+      <li>${t('usage3')}</li>
+      <li>${t('usage4')}</li>
+      <li>${t('usage5')}</li>
+    </ol>
+  </div>`));
+
+  navButtons(c);
+  document.getElementById('nextBtn').style.display='none';
+}
+
+/* ================= XML GENERATION ================= */
+function xmlEscape(s){return esc(s);}
+
+function toUtf16LEBase64(str){
+  const bytes = new Uint8Array(str.length*2);
+  for(let i=0;i<str.length;i++){
+    const code = str.charCodeAt(i);
+    bytes[i*2] = code & 0xff;
+    bytes[i*2+1] = (code>>8) & 0xff;
+  }
+  let binary='';
+  for(let i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+function generateXML(){
+  const L = [];
+  const push = s=>L.push(s);
+  const isGPT = state.diskLayout==='gpt';
+  const hasRec = state.recoveryPartition;
+
+  push(`<?xml version="1.0" encoding="utf-8"?>`);
+  push(`<unattend xmlns="urn:schemas-microsoft-com:unattend">`);
+
+  push(`  <settings pass="windowsPE">`);
+  push(`    <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
+  push(`      <SetupUILanguage><UILanguage>${state.uiLang}</UILanguage></SetupUILanguage>`);
+  push(`      <InputLocale>${state.keyboard}</InputLocale>`);
+  push(`      <SystemLocale>${state.uiLang}</SystemLocale>`);
+  push(`      <UILanguage>${state.uiLang}</UILanguage>`);
+  push(`      <UserLocale>${state.uiLang}</UserLocale>`);
+  push(`    </component>`);
+
+  push(`    <component name="Microsoft-Windows-Setup" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
+
+  let rsOrder=1;
+  if(state.bypassWin11 || state.bypassNRO){
+    push(`      <RunSynchronous>`);
+    if(state.bypassWin11){
+      push(`        <RunSynchronousCommand wcm:action="add"><Order>${rsOrder++}</Order><Path>reg.exe add HKLM\\SYSTEM\\Setup\\LabConfig /v BypassTPMCheck /t REG_DWORD /d 1 /f</Path></RunSynchronousCommand>`);
+      push(`        <RunSynchronousCommand wcm:action="add"><Order>${rsOrder++}</Order><Path>reg.exe add HKLM\\SYSTEM\\Setup\\LabConfig /v BypassSecureBootCheck /t REG_DWORD /d 1 /f</Path></RunSynchronousCommand>`);
+      push(`        <RunSynchronousCommand wcm:action="add"><Order>${rsOrder++}</Order><Path>reg.exe add HKLM\\SYSTEM\\Setup\\LabConfig /v BypassRAMCheck /t REG_DWORD /d 1 /f</Path></RunSynchronousCommand>`);
+      push(`        <RunSynchronousCommand wcm:action="add"><Order>${rsOrder++}</Order><Path>reg.exe add HKLM\\SYSTEM\\Setup\\LabConfig /v BypassStorageCheck /t REG_DWORD /d 1 /f</Path></RunSynchronousCommand>`);
+      push(`        <RunSynchronousCommand wcm:action="add"><Order>${rsOrder++}</Order><Path>reg.exe add HKLM\\SYSTEM\\Setup\\LabConfig /v BypassCPUCheck /t REG_DWORD /d 1 /f</Path></RunSynchronousCommand>`);
+    }
+    if(state.bypassNRO){
+      push(`        <RunSynchronousCommand wcm:action="add"><Order>${rsOrder++}</Order><Path>reg.exe add HKLM\\SYSTEM\\Setup\\LabConfig /v BypassNRO /t REG_DWORD /d 1 /f</Path></RunSynchronousCommand>`);
+    }
+    push(`      </RunSynchronous>`);
+  }
+
+  push(`      <DiskConfiguration>`);
+  push(`        <Disk wcm:action="add">`);
+  push(`          <DiskID>0</DiskID>`);
+  push(`          <WillWipeDisk>true</WillWipeDisk>`);
+  push(`          <CreatePartitions>`);
+  let order=1, sysPartId, winPartId, recPartId;
+  if(isGPT){
+    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>EFI</Type><Size>300</Size></CreatePartition>`); sysPartId=order; order++;
+    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>MSR</Type><Size>16</Size></CreatePartition>`); order++;
+    if(hasRec){
+      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>990</Size></CreatePartition>`); recPartId=order; order++;
+    }
+    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Extend>true</Extend></CreatePartition>`); winPartId=order; order++;
+  } else {
+    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>100</Size></CreatePartition>`); sysPartId=order; order++;
+    if(hasRec){
+      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>990</Size></CreatePartition>`); recPartId=order; order++;
+    }
+    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Extend>true</Extend></CreatePartition>`); winPartId=order; order++;
+  }
+  push(`          </CreatePartitions>`);
+  push(`          <ModifyPartitions>`);
+  let mOrder=1;
+  if(isGPT){
+    push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${sysPartId}</PartitionID><Label>System</Label><Format>FAT32</Format></ModifyPartition>`);
+    if(hasRec){
+      push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${recPartId}</PartitionID><Label>Recovery</Label><Format>NTFS</Format><TypeID>DE94BBA4-06D1-4D40-A16A-BFD50179D6AC</TypeID></ModifyPartition>`);
+    }
+    push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${winPartId}</PartitionID><Label>Windows</Label><Format>NTFS</Format><Letter>C</Letter></ModifyPartition>`);
+  } else {
+    push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${sysPartId}</PartitionID><Label>System</Label><Format>NTFS</Format><Active>true</Active><Letter>S</Letter></ModifyPartition>`);
+    if(hasRec){
+      push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${recPartId}</PartitionID><Label>Recovery</Label><Format>NTFS</Format><TypeID>27</TypeID></ModifyPartition>`);
+    }
+    push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${winPartId}</PartitionID><Label>Windows</Label><Format>NTFS</Format><Letter>C</Letter></ModifyPartition>`);
+  }
+  push(`          </ModifyPartitions>`);
+  push(`        </Disk>`);
+  push(`      </DiskConfiguration>`);
+
+  push(`      <ImageInstall>`);
+  push(`        <OSImage>`);
+  push(`          <InstallTo><DiskID>0</DiskID><PartitionID>${winPartId}</PartitionID></InstallTo>`);
+  push(`          <InstallToAvailablePartition>false</InstallToAvailablePartition>`);
+  push(`        </OSImage>`);
+  push(`      </ImageInstall>`);
+
+  push(`      <UserData>`);
+  push(`        <AcceptEula>true</AcceptEula>`);
+  if(state.keyMode==='generic'){
+    const key = EDITIONS.find(e=>e[0]===state.edition)[1];
+    push(`        <ProductKey><Key>${key}</Key></ProductKey>`);
+  } else if(state.keyMode==='custom' && state.customKey){
+    push(`        <ProductKey><Key>${xmlEscape(state.customKey)}</Key></ProductKey>`);
+  }
+  push(`      </UserData>`);
+  push(`    </component>`);
+
+  push(`  </settings>`);
+
+  push(`  <settings pass="specialize">`);
+  push(`    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
+  if(state.computerNameMode==='custom' && state.computerName){
+    push(`      <ComputerName>${xmlEscape(state.computerName)}</ComputerName>`);
+  }
+  if(state.timezoneMode==='custom'){
+    push(`      <TimeZone>${xmlEscape(state.timezone)}</TimeZone>`);
+  }
+  push(`    </component>`);
+
+  push(`    <component name="Microsoft-Windows-International-Core" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
+  push(`      <InputLocale>${state.keyboard}</InputLocale>`);
+  push(`      <SystemLocale>${state.uiLang}</SystemLocale>`);
+  push(`      <UILanguage>${state.uiLang}</UILanguage>`);
+  push(`      <UserLocale>${state.uiLang}</UserLocale>`);
+  push(`      <GeoLocation>${state.geoId}</GeoLocation>`);
+  push(`    </component>`);
+  push(`  </settings>`);
+
+  push(`  <settings pass="oobeSystem">`);
+  push(`    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
+  push(`      <OOBE>`);
+  push(`        <HideEULAPage>true</HideEULAPage>`);
+  push(`        <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>`);
+  push(`        <HideOnlineAccountScreens>true</HideOnlineAccountScreens>`);
+  push(`        <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>`);
+  push(`        <NetworkLocation>Home</NetworkLocation>`);
+  push(`        <ProtectYourPC>${state.express==='disable'?3:1}</ProtectYourPC>`);
+  push(`        <SkipMachineOOBE>true</SkipMachineOOBE>`);
+  push(`        <SkipUserOOBE>true</SkipUserOOBE>`);
+  push(`      </OOBE>`);
+
+  const validAccounts = state.accounts.filter(a=>a.name.trim());
+  if(validAccounts.length){
+    push(`      <UserAccounts>`);
+    push(`        <LocalAccounts>`);
+    validAccounts.forEach(acc=>{
+      push(`          <LocalAccount wcm:action="add">`);
+      push(`            <Name>${xmlEscape(acc.name)}</Name>`);
+      if(acc.display) push(`            <DisplayName>${xmlEscape(acc.display)}</DisplayName>`);
+      push(`            <Group>${acc.group}</Group>`);
+      if(acc.password){
+        push(`            <Password><Value>${xmlEscape(acc.password)}</Value><PlainText>true</PlainText></Password>`);
+      }
+      push(`          </LocalAccount>`);
+    });
+    push(`        </LocalAccounts>`);
+    push(`      </UserAccounts>`);
+
+    if(state.autologonMode==='first'){
+      const first = validAccounts[0];
+      push(`      <AutoLogon>`);
+      push(`        <Username>${xmlEscape(first.name)}</Username>`);
+      push(`        <Enabled>true</Enabled>`);
+      push(`        <LogonCount>1</LogonCount>`);
+      push(`        <Password><Value>${xmlEscape(first.password||'')}</Value><PlainText>true</PlainText></Password>`);
+      push(`      </AutoLogon>`);
+    }
+  }
+
+  const cmds=[];
+  if(!state.uac) cmds.push({d:'Disable UAC', c:`reg.exe add "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System" /v EnableLUA /t REG_DWORD /d 0 /f`});
+  if(!state.smartscreen) cmds.push({d:'Disable SmartScreen', c:`reg.exe add "HKLM\\SOFTWARE\\Microsoft\\Windows\\System" /v EnableSmartScreen /t REG_DWORD /d 0 /f`});
+  if(!state.fastStartup) cmds.push({d:'Disable Fast Startup', c:`reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power" /v HiberbootEnabled /t REG_DWORD /d 0 /f`});
+  if(!state.systemRestore) cmds.push({d:'Disable System Restore', c:`powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Disable-ComputerRestore -Drive 'C:\\'"`});
+  if(!state.windowsUpdate) cmds.push({d:'Disable Windows Update service', c:`sc.exe config wuauserv start= disabled`});
+  if(state.passwordExpiration==='never') cmds.push({d:'Passwords never expire', c:`powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Get-LocalUser | Set-LocalUser -PasswordNeverExpires 1"`});
+  if(state.showHiddenFiles) cmds.push({d:'Show hidden files', c:`reg.exe add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" /v Hidden /t REG_DWORD /d 1 /f`});
+  if(state.showExtensions) cmds.push({d:'Show file extensions', c:`reg.exe add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" /v HideFileExt /t REG_DWORD /d 0 /f`});
+  if(state.classicContext) cmds.push({d:'Classic context menu', c:`reg.exe add "HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32" /f /ve`});
+  if(state.thisPCDefault) cmds.push({d:'Open Explorer to This PC', c:`reg.exe add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" /v LaunchTo /t REG_DWORD /d 1 /f`});
+  if(state.endTask) cmds.push({d:'Show End Task in taskbar', c:`reg.exe add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings" /v TaskbarEndTask /t REG_DWORD /d 1 /f`});
+  if(state.express==='disable'){
+    cmds.push({d:'Disable telemetry', c:`reg.exe add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f`});
+    cmds.push({d:'Disable advertising ID', c:`reg.exe add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo" /v Enabled /t REG_DWORD /d 0 /f`});
+  }
+  if(state.visualEffects==='performance') cmds.push({d:'Best performance visual effects', c:`reg.exe add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f`});
+  if(state.visualEffects==='appearance') cmds.push({d:'Best appearance visual effects', c:`reg.exe add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 1 /f`});
+
+  Object.entries(state.bloat).forEach(([pattern,on])=>{
+    if(!on) return;
+    if(pattern==='__ONEDRIVE__'){
+      cmds.push({d:'Remove OneDrive', c:`powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath \\"$env:SystemRoot\\SysWOW64\\OneDriveSetup.exe\\" -ArgumentList '/uninstall' -Wait -ErrorAction SilentlyContinue"`});
+    } else {
+      cmds.push({d:'Remove app '+pattern, c:`powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Get-AppxPackage -AllUsers -Name '${pattern}' | Remove-AppxPackage -ErrorAction SilentlyContinue"`});
+    }
+  });
+
+  if(state.firstLogonScript && state.firstLogonScript.trim()){
+    const encoded = toUtf16LEBase64(state.firstLogonScript);
+    cmds.push({d:'Run custom script', c:`powershell.exe -NoProfile -ExecutionPolicy Bypass -EncodedCommand ${encoded}`});
+  }
+
+  if(cmds.length){
+    push(`      <FirstLogonCommands>`);
+    cmds.forEach((cmd,i)=>{
+      push(`        <SynchronousCommand wcm:action="add">`);
+      push(`          <Order>${i+1}</Order>`);
+      push(`          <CommandLine>${xmlEscape(cmd.c)}</CommandLine>`);
+      push(`          <Description>${xmlEscape(cmd.d)}</Description>`);
+      push(`          <RequiresUserInput>false</RequiresUserInput>`);
+      push(`        </SynchronousCommand>`);
+    });
+    push(`      </FirstLogonCommands>`);
+  }
+
+  push(`    </component>`);
+
+  push(`    <component name="Microsoft-Windows-International-Core" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
+  push(`      <InputLocale>${state.keyboard}</InputLocale>`);
+  push(`      <SystemLocale>${state.uiLang}</SystemLocale>`);
+  push(`      <UILanguage>${state.uiLang}</UILanguage>`);
+  push(`      <UserLocale>${state.uiLang}</UserLocale>`);
+  push(`    </component>`);
+
+  push(`  </settings>`);
+  push(`</unattend>`);
+
+  return L.join('\n');
+}
+
+function downloadXML(){
+  const xml = generateXML();
+  const blob = new Blob([xml],{type:'application/xml'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='autounattend.xml';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function applyAppLangChrome(){
+  const html = document.getElementById('htmlRoot');
+  html.dir = state.appLang==='fa' ? 'rtl' : 'ltr';
+  html.lang = state.appLang==='fa' ? 'fa' : 'en';
+  html.setAttribute('data-applang', state.appLang);
+  document.getElementById('appTitle').textContent = t('appTitle');
+  document.getElementById('appSubtitle').textContent = t('appSubtitle');
+  document.getElementById('sourceLink').textContent = t('sourceLink');
+  document.getElementById('footerNote').textContent = t('footer');
+  document.getElementById('langFaBtn').classList.toggle('active', state.appLang==='fa');
+  document.getElementById('langEnBtn').classList.toggle('active', state.appLang==='en');
+}
+document.getElementById('langFaBtn').onclick=()=>{ state.appLang='fa'; applyAppLangChrome(); renderAll(); };
+document.getElementById('langEnBtn').onclick=()=>{ state.appLang='en'; applyAppLangChrome(); renderAll(); };
+
+function renderAll(){
+  renderSidebar();
+  stepRenderers[current]();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+applyAppLangChrome();
+renderAll();
+</script>
+</body>
+</html>

@@ -329,6 +329,8 @@ fa:{
   langH:'زبان و صفحه‌کلید', langS:'زبان نمایش ویندوز و چیدمان صفحه‌کلید ورودی را انتخاب کنید.',
   uiLangLbl:'زبان نمایش ویندوز (Display Language)', uiLangHint:'این زبان باید با زبان فایل ISO ویندوز شما یکسان باشد.',
   kbLbl:'چیدمان صفحه‌کلید (Keyboard Layout)',
+  kbLbl2:'زبان دوم صفحه‌کلید (اختیاری)', kbLbl2Hint:'می‌توانید یک زبان دوم برای صفحه‌کلید اضافه کنید تا بعد از نصب با کلید ترکیبی Alt+Shift بین دو زبان جابه‌جا شوید.',
+  kbNoneOpt:'هیچ‌کدام (فقط یک زبان)',
   geoLbl:'موقعیت مکانی (Home Location)', geoHint:'کشوری که برای محتوای بومی، Microsoft Store و تنظیمات منطقه‌ای استفاده می‌شود.',
 
   edH:'نسخه و کلید محصول ویندوز', edS:'نسخه‌ای که باید نصب شود و نحوه‌ی وارد کردن کلید را مشخص کنید.',
@@ -339,11 +341,15 @@ fa:{
   editionLbl:'نسخه‌ی ویندوز', pkeyLbl:'کلید محصول',
   archLbl:'معماری پردازنده', arch64:'Intel/AMD 64-bit', arch32:'Intel/AMD 32-bit', archArm:'Windows on Arm64',
 
-  setupH:'تنظیمات نصب و پارتیشن‌بندی دیسک', setupS:'دیسک به‌طور خودکار پاک، پارتیشن‌بندی و فرمت می‌شود (تمام داده‌های قبلی پاک خواهد شد).',
+  setupH:'تنظیمات نصب و پارتیشن‌بندی دیسک', setupS:'می‌توانید پارتیشن‌بندی دیسک را به این ابزار بسپارید (خودکار، همه‌ی داده‌های قبلی پاک می‌شود) یا خودتان حین نصب آن را انجام دهید (دستی).',
   bypassWin11T:'دور زدن شرایط سخت‌افزاری ویندوز ۱۱', bypassWin11D:'نیاز به TPM 2.0، Secure Boot و حداقل RAM/CPU حذف می‌شود.',
   bypassNROT:'نصب بدون نیاز به اینترنت', bypassNROD:'امکان ساخت حساب کاربری آفلاین در صفحه‌ی OOBE ویندوز ۱۱.',
   hidePST:'مخفی کردن پنجره‌های PowerShell در حین نصب', hidePSD:'اسکریپت‌ها بی‌صدا و بدون پنجره اجرا می‌شوند.',
   keepSensT:'نگه‌داشتن فایل‌های حساس بعد از نصب', keepSensD:'فایل unattend.xml روی دیسک باقی می‌ماند (پیش‌فرض حذف می‌شود).',
+  partModeLbl:'روش پارتیشن‌بندی دیسک',
+  partAutoT:'خودکار (توسط این ابزار)', partAutoD:'دیسک به‌طور خودکار پاک، پارتیشن‌بندی و فرمت می‌شود.',
+  partManualT:'دستی (به عهده‌ی کاربر)', partManualD:'حین نصب، صفحه‌ی انتخاب/پارتیشن‌بندی دیسک ویندوز نمایش داده می‌شود و شما خودتان دیسک را انتخاب و پارتیشن‌بندی می‌کنید.',
+  partManualNote:'با این گزینه، بخش پارتیشن‌بندی خودکار از فایل حذف می‌شود و Windows Setup مثل حالت عادی، صفحه‌ی «ویندوز را کجا نصب می‌کنید؟» را نمایش می‌دهد تا خودتان دیسک/پارتیشن مقصد را انتخاب یا بسازید.',
   diskLayoutLbl:'نوع پارتیشن‌بندی دیسک',
   gptT:'GPT (UEFI)', gptD:'برای سیستم‌های مدرن و ویندوز ۱۱', mbrT:'MBR (BIOS قدیمی)', mbrD:'برای سیستم‌های Legacy BIOS',
   recoveryT:'ساخت پارتیشن بازیابی (Recovery)', recoveryD:'فضایی جدا برای Windows RE در نظر گرفته می‌شود.',
@@ -383,7 +389,7 @@ fa:{
   scriptPh:'# مثال:\nwinget install Git.Git -e --silent',
 
   revH:'بازبینی نهایی و دانلود فایل', revS:'همه چیز آماده‌است. خلاصه‌ی تنظیمات را بررسی و فایل autounattend.xml را دانلود کنید.',
-  sumLang:'زبان', sumGeo:'موقعیت مکانی', sumEdition:'نسخه ویندوز', sumArch:'معماری', sumPart:'پارتیشن‌بندی', sumBypass:'دور زدن شرایط ویندوز ۱۱',
+  sumLang:'زبان', sumGeo:'موقعیت مکانی', sumEdition:'نسخه ویندوز', sumArch:'معماری', sumPart:'پارتیشن‌بندی', sumKb2:'زبان دوم کیبورد', sumBypass:'دور زدن شرایط ویندوز ۱۱',
   sumCn:'نام کامپیوتر', sumAccCount:'تعداد حساب‌های کاربری', sumTz:'منطقه‌ی زمانی', sumPriv:'حریم خصوصی', sumBloat:'اپ‌های حذف‌شده',
   yes:'بله', no:'خیر', random:'تصادفی', interactive:'پرسش تعاملی', customKeyLbl:'کلید دلخواه', auto:'خودکار', disabled:'غیرفعال', enabled:'فعال', items:'مورد',
   readyMsg:'فایل شما آماده‌ی دانلود است', dlBtn:'⬇ دانلود autounattend.xml',
@@ -405,6 +411,8 @@ en:{
   langH:'Language & keyboard', langS:'Choose the Windows display language and the input keyboard layout.',
   uiLangLbl:'Windows display language', uiLangHint:'This must match the language of your Windows ISO file.',
   kbLbl:'Keyboard layout',
+  kbLbl2:'Second keyboard language (optional)', kbLbl2Hint:'Add a second keyboard language to switch between the two with Alt+Shift after setup.',
+  kbNoneOpt:'None (single language only)',
   geoLbl:'Home location', geoHint:'The country used for local content, Microsoft Store and regional settings.',
 
   edH:'Windows edition & product key', edS:'Choose which edition gets installed and how the product key is supplied.',
@@ -415,11 +423,15 @@ en:{
   editionLbl:'Windows edition', pkeyLbl:'Product key',
   archLbl:'Processor architecture', arch64:'Intel/AMD 64-bit', arch32:'Intel/AMD 32-bit', archArm:'Windows on Arm64',
 
-  setupH:'Setup options & disk partitioning', setupS:'The disk will be automatically wiped, partitioned and formatted (all existing data will be lost).',
+  setupH:'Setup options & disk partitioning', setupS:'You can let this tool handle partitioning automatically (wipes all existing data) or do it yourself manually during setup.',
   bypassWin11T:'Bypass Windows 11 hardware requirements', bypassWin11D:'Removes the TPM 2.0, Secure Boot and minimum RAM/CPU checks.',
   bypassNROT:'Install without an internet connection', bypassNROD:'Allows creating an offline account on the Windows 11 OOBE screen.',
   hidePST:'Hide PowerShell windows during setup', hidePSD:'Scripts run silently, without a visible window.',
   keepSensT:'Keep sensitive files after setup', keepSensD:'unattend.xml is kept on disk (deleted by default).',
+  partModeLbl:'Disk partitioning method',
+  partAutoT:'Automatic (handled by this tool)', partAutoD:'The disk is automatically wiped, partitioned and formatted.',
+  partManualT:'Manual (up to you)', partManualD:'During setup, the Windows disk selection/partitioning screen is shown so you can choose and partition the disk yourself.',
+  partManualNote:'With this option, the automatic partitioning section is removed from the file, and Windows Setup shows the normal "Where do you want to install Windows?" screen so you can pick or create the target disk/partition yourself.',
   diskLayoutLbl:'Disk partition layout',
   gptT:'GPT (UEFI)', gptD:'For modern systems and Windows 11', mbrT:'MBR (Legacy BIOS)', mbrD:'For Legacy BIOS systems',
   recoveryT:'Create a recovery partition', recoveryD:'Reserves separate space for Windows RE.',
@@ -459,7 +471,7 @@ en:{
   scriptPh:'# example:\nwinget install Git.Git -e --silent',
 
   revH:'Final review & download', revS:'Everything is ready. Review the summary and download your autounattend.xml file.',
-  sumLang:'Language', sumGeo:'Home location', sumEdition:'Windows edition', sumArch:'Architecture', sumPart:'Partitioning', sumBypass:'Bypass Win 11 checks',
+  sumLang:'Language', sumGeo:'Home location', sumEdition:'Windows edition', sumArch:'Architecture', sumPart:'Partitioning', sumKb2:'Second keyboard', sumBypass:'Bypass Win 11 checks',
   sumCn:'Computer name', sumAccCount:'User accounts', sumTz:'Time zone', sumPriv:'Privacy', sumBloat:'Apps removed',
   yes:'Yes', no:'No', random:'Random', interactive:'Asked interactively', customKeyLbl:'Custom key', auto:'Automatic', disabled:'Disabled', enabled:'Enabled', items:'items',
   readyMsg:'Your file is ready to download', dlBtn:'⬇ Download autounattend.xml',
@@ -595,11 +607,11 @@ const BLOATWARE = [
 
 const state = {
   appLang:'fa',
-  uiLang:'fa-IR', keyboard:'0429:00000429', geoId:'116',
+  uiLang:'fa-IR', keyboard:'0429:00000429', keyboard2:'', geoId:'116',
   keyMode:'generic', edition:'Pro', customKey:'',
   arch:'amd64',
   bypassWin11:true, bypassNRO:true, hidePowerShell:false, keepSensitiveFiles:false,
-  diskLayout:'gpt', recoveryPartition:true,
+  partitionMode:'auto', diskLayout:'gpt', recoveryPartition:true,
   computerNameMode:'random', computerName:'',
   accounts:[{name:'User',display:'',password:'',group:'Administrators'}],
   autologonMode:'first',
@@ -673,6 +685,16 @@ function renderLang(){
   KEYBOARDS.forEach(([code,name])=>sel2.appendChild(el(`<option value="${code}" ${code===state.keyboard?'selected':''}>${name}</option>`)));
   sel2.onchange=e=>state.keyboard=e.target.value;
   c.appendChild(f2);
+
+  const f2b=el(`<div class="field"><label class="title">${t('kbLbl2')}</label>
+    <select id="kb2"></select>
+    <div class="hint">${t('kbLbl2Hint')}</div></div>`);
+  const sel2b=f2b.querySelector('select');
+  sel2b.appendChild(el(`<option value="">${t('kbNoneOpt')}</option>`));
+  KEYBOARDS.forEach(([code,name])=>sel2b.appendChild(el(`<option value="${code}" ${code===state.keyboard2?'selected':''}>${name}</option>`)));
+  sel2b.value = state.keyboard2;
+  sel2b.onchange=e=>state.keyboard2=e.target.value;
+  c.appendChild(f2b);
 
   const f3=el(`<div class="field"><label class="title">${t('geoLbl')}</label>
     <select id="geo"></select>
@@ -748,20 +770,35 @@ function renderSetup(){
   toggleField(box,'keepSensitiveFiles',t('keepSensT'),t('keepSensD'));
   c.appendChild(box);
 
-  const f=el(`<div class="field" style="margin-top:16px;"><label class="title">${t('diskLayoutLbl')}</label>
+  const fp=el(`<div class="field" style="margin-top:16px;"><label class="title">${t('partModeLbl')}</label>
     <div class="choice-grid">
-      <div class="choice" data-v="gpt"><div class="t">${t('gptT')}</div><div class="d">${t('gptD')}</div></div>
-      <div class="choice" data-v="mbr"><div class="t">${t('mbrT')}</div><div class="d">${t('mbrD')}</div></div>
+      <div class="choice" data-v="auto"><div class="t">${t('partAutoT')}</div><div class="d">${t('partAutoD')}</div></div>
+      <div class="choice" data-v="manual"><div class="t">${t('partManualT')}</div><div class="d">${t('partManualD')}</div></div>
     </div></div>`);
-  f.querySelectorAll('.choice').forEach(ch=>{
-    if(ch.dataset.v===state.diskLayout) ch.classList.add('selected');
-    ch.onclick=()=>{state.diskLayout=ch.dataset.v; renderSetup();};
+  fp.querySelectorAll('.choice').forEach(ch=>{
+    if(ch.dataset.v===state.partitionMode) ch.classList.add('selected');
+    ch.onclick=()=>{state.partitionMode=ch.dataset.v; renderSetup();};
   });
-  c.appendChild(f);
+  c.appendChild(fp);
 
-  const box2=el('<div></div>');
-  toggleField(box2,'recoveryPartition',t('recoveryT'),t('recoveryD'));
-  c.appendChild(box2);
+  if(state.partitionMode==='auto'){
+    const f=el(`<div class="field" style="margin-top:16px;"><label class="title">${t('diskLayoutLbl')}</label>
+      <div class="choice-grid">
+        <div class="choice" data-v="gpt"><div class="t">${t('gptT')}</div><div class="d">${t('gptD')}</div></div>
+        <div class="choice" data-v="mbr"><div class="t">${t('mbrT')}</div><div class="d">${t('mbrD')}</div></div>
+      </div></div>`);
+    f.querySelectorAll('.choice').forEach(ch=>{
+      if(ch.dataset.v===state.diskLayout) ch.classList.add('selected');
+      ch.onclick=()=>{state.diskLayout=ch.dataset.v; renderSetup();};
+    });
+    c.appendChild(f);
+
+    const box2=el('<div></div>');
+    toggleField(box2,'recoveryPartition',t('recoveryT'),t('recoveryD'));
+    c.appendChild(box2);
+  } else {
+    c.appendChild(el(`<div class="usage-note" style="margin-top:16px;">${t('partManualNote')}</div>`));
+  }
 
   navButtons(c);
 }
@@ -949,7 +986,8 @@ function renderReview(){
     [t('sumGeo'),(GEOLOCATIONS.find(g=>g[0]===state.geoId)||[,state.geoId])[1]],
     [t('sumEdition'), state.keyMode==='generic'?state.edition:(state.keyMode==='custom'?t('customKeyLbl'):t('interactive'))],
     [t('sumArch'),state.arch],
-    [t('sumPart'),state.diskLayout.toUpperCase()+(state.recoveryPartition?' + Recovery':'')],
+    [t('sumPart'), state.partitionMode==='manual'?t('partManualT'):(state.diskLayout.toUpperCase()+(state.recoveryPartition?' + Recovery':''))],
+    [t('sumKb2'), state.keyboard2?(KEYBOARDS.find(k=>k[0]===state.keyboard2)||[,state.keyboard2])[1]:t('kbNoneOpt')],
     [t('sumBypass'), state.bypassWin11?t('yes'):t('no')],
     [t('sumCn'), state.computerNameMode==='random'?t('random'):(state.computerName||'—')],
     [t('sumAccCount'), state.accounts.filter(a=>a.name.trim()).length],
@@ -1010,6 +1048,8 @@ function generateXML(){
   const push = s=>L.push(s);
   const isGPT = state.diskLayout==='gpt';
   const hasRec = state.recoveryPartition;
+  const isManualPartition = state.partitionMode==='manual';
+  const inputLocale = state.keyboard2 ? `${state.keyboard};${state.keyboard2}` : state.keyboard;
 
   push(`<?xml version="1.0" encoding="utf-8"?>`);
   push(`<unattend xmlns="urn:schemas-microsoft-com:unattend">`);
@@ -1017,7 +1057,7 @@ function generateXML(){
   push(`  <settings pass="windowsPE">`);
   push(`    <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
   push(`      <SetupUILanguage><UILanguage>${state.uiLang}</UILanguage></SetupUILanguage>`);
-  push(`      <InputLocale>${state.keyboard}</InputLocale>`);
+  push(`      <InputLocale>${inputLocale}</InputLocale>`);
   push(`      <SystemLocale>${state.uiLang}</SystemLocale>`);
   push(`      <UILanguage>${state.uiLang}</UILanguage>`);
   push(`      <UserLocale>${state.uiLang}</UserLocale>`);
@@ -1041,52 +1081,54 @@ function generateXML(){
     push(`      </RunSynchronous>`);
   }
 
-  push(`      <DiskConfiguration>`);
-  push(`        <Disk wcm:action="add">`);
-  push(`          <DiskID>0</DiskID>`);
-  push(`          <WillWipeDisk>true</WillWipeDisk>`);
-  push(`          <CreatePartitions>`);
-  let order=1, sysPartId, winPartId, recPartId;
-  if(isGPT){
-    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>EFI</Type><Size>300</Size></CreatePartition>`); sysPartId=order; order++;
-    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>MSR</Type><Size>16</Size></CreatePartition>`); order++;
-    if(hasRec){
-      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>990</Size></CreatePartition>`); recPartId=order; order++;
+  if(!isManualPartition){
+    push(`      <DiskConfiguration>`);
+    push(`        <Disk wcm:action="add">`);
+    push(`          <DiskID>0</DiskID>`);
+    push(`          <WillWipeDisk>true</WillWipeDisk>`);
+    push(`          <CreatePartitions>`);
+    let order=1, sysPartId, winPartId, recPartId;
+    if(isGPT){
+      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>EFI</Type><Size>300</Size></CreatePartition>`); sysPartId=order; order++;
+      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>MSR</Type><Size>16</Size></CreatePartition>`); order++;
+      if(hasRec){
+        push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>990</Size></CreatePartition>`); recPartId=order; order++;
+      }
+      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Extend>true</Extend></CreatePartition>`); winPartId=order; order++;
+    } else {
+      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>100</Size></CreatePartition>`); sysPartId=order; order++;
+      if(hasRec){
+        push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>990</Size></CreatePartition>`); recPartId=order; order++;
+      }
+      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Extend>true</Extend></CreatePartition>`); winPartId=order; order++;
     }
-    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Extend>true</Extend></CreatePartition>`); winPartId=order; order++;
-  } else {
-    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>100</Size></CreatePartition>`); sysPartId=order; order++;
-    if(hasRec){
-      push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Size>990</Size></CreatePartition>`); recPartId=order; order++;
+    push(`          </CreatePartitions>`);
+    push(`          <ModifyPartitions>`);
+    let mOrder=1;
+    if(isGPT){
+      push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${sysPartId}</PartitionID><Label>System</Label><Format>FAT32</Format></ModifyPartition>`);
+      if(hasRec){
+        push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${recPartId}</PartitionID><Label>Recovery</Label><Format>NTFS</Format><TypeID>DE94BBA4-06D1-4D40-A16A-BFD50179D6AC</TypeID></ModifyPartition>`);
+      }
+      push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${winPartId}</PartitionID><Label>Windows</Label><Format>NTFS</Format><Letter>C</Letter></ModifyPartition>`);
+    } else {
+      push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${sysPartId}</PartitionID><Label>System</Label><Format>NTFS</Format><Active>true</Active><Letter>S</Letter></ModifyPartition>`);
+      if(hasRec){
+        push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${recPartId}</PartitionID><Label>Recovery</Label><Format>NTFS</Format><TypeID>27</TypeID></ModifyPartition>`);
+      }
+      push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${winPartId}</PartitionID><Label>Windows</Label><Format>NTFS</Format><Letter>C</Letter></ModifyPartition>`);
     }
-    push(`            <CreatePartition wcm:action="add"><Order>${order}</Order><Type>Primary</Type><Extend>true</Extend></CreatePartition>`); winPartId=order; order++;
-  }
-  push(`          </CreatePartitions>`);
-  push(`          <ModifyPartitions>`);
-  let mOrder=1;
-  if(isGPT){
-    push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${sysPartId}</PartitionID><Label>System</Label><Format>FAT32</Format></ModifyPartition>`);
-    if(hasRec){
-      push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${recPartId}</PartitionID><Label>Recovery</Label><Format>NTFS</Format><TypeID>DE94BBA4-06D1-4D40-A16A-BFD50179D6AC</TypeID></ModifyPartition>`);
-    }
-    push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${winPartId}</PartitionID><Label>Windows</Label><Format>NTFS</Format><Letter>C</Letter></ModifyPartition>`);
-  } else {
-    push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${sysPartId}</PartitionID><Label>System</Label><Format>NTFS</Format><Active>true</Active><Letter>S</Letter></ModifyPartition>`);
-    if(hasRec){
-      push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${recPartId}</PartitionID><Label>Recovery</Label><Format>NTFS</Format><TypeID>27</TypeID></ModifyPartition>`);
-    }
-    push(`            <ModifyPartition wcm:action="add"><Order>${mOrder++}</Order><PartitionID>${winPartId}</PartitionID><Label>Windows</Label><Format>NTFS</Format><Letter>C</Letter></ModifyPartition>`);
-  }
-  push(`          </ModifyPartitions>`);
-  push(`        </Disk>`);
-  push(`      </DiskConfiguration>`);
+    push(`          </ModifyPartitions>`);
+    push(`        </Disk>`);
+    push(`      </DiskConfiguration>`);
 
-  push(`      <ImageInstall>`);
-  push(`        <OSImage>`);
-  push(`          <InstallTo><DiskID>0</DiskID><PartitionID>${winPartId}</PartitionID></InstallTo>`);
-  push(`          <InstallToAvailablePartition>false</InstallToAvailablePartition>`);
-  push(`        </OSImage>`);
-  push(`      </ImageInstall>`);
+    push(`      <ImageInstall>`);
+    push(`        <OSImage>`);
+    push(`          <InstallTo><DiskID>0</DiskID><PartitionID>${winPartId}</PartitionID></InstallTo>`);
+    push(`          <InstallToAvailablePartition>false</InstallToAvailablePartition>`);
+    push(`        </OSImage>`);
+    push(`      </ImageInstall>`);
+  }
 
   push(`      <UserData>`);
   push(`        <AcceptEula>true</AcceptEula>`);
@@ -1112,7 +1154,7 @@ function generateXML(){
   push(`    </component>`);
 
   push(`    <component name="Microsoft-Windows-International-Core" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
-  push(`      <InputLocale>${state.keyboard}</InputLocale>`);
+  push(`      <InputLocale>${inputLocale}</InputLocale>`);
   push(`      <SystemLocale>${state.uiLang}</SystemLocale>`);
   push(`      <UILanguage>${state.uiLang}</UILanguage>`);
   push(`      <UserLocale>${state.uiLang}</UserLocale>`);
@@ -1210,7 +1252,7 @@ function generateXML(){
   push(`    </component>`);
 
   push(`    <component name="Microsoft-Windows-International-Core" processorArchitecture="${state.arch}" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`);
-  push(`      <InputLocale>${state.keyboard}</InputLocale>`);
+  push(`      <InputLocale>${inputLocale}</InputLocale>`);
   push(`      <SystemLocale>${state.uiLang}</SystemLocale>`);
   push(`      <UILanguage>${state.uiLang}</UILanguage>`);
   push(`      <UserLocale>${state.uiLang}</UserLocale>`);
